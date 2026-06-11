@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SUPERBOX - Детали заказа</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#dadddf",
+                        "surface-dim": "#d1d5d7",
+                        "on-secondary-fixed": "#4e008a",
+                        "tertiary-fixed-dim": "#c588fe",
+                        "secondary-fixed-dim": "#dab4ff",
+                        "on-tertiary-fixed-variant": "#54118a",
+                        "on-primary-fixed": "#000000",
+                        "on-surface": "#2c2f30",
+                        "primary-container": "#ff6cb5",
+                        "secondary-fixed": "#e4c6ff",
+                        "error": "#b41340",
+                        "outline": "#757778",
+                        "tertiary": "#783eaf",
+                        "inverse-surface": "#0c0f10",
+                        "on-secondary-fixed-variant": "#7500cc",
+                        "on-error-container": "#510017",
+                        "tertiary-fixed": "#ce9aff",
+                        "error-container": "#f74b6d",
+                        "on-tertiary": "#fbefff",
+                        "on-secondary-container": "#6800b6",
+                        "primary-fixed": "#ff6cb5",
+                        "primary-fixed-dim": "#f05da8",
+                        "surface-container-low": "#eff1f2",
+                        "tertiary-dim": "#6c30a2",
+                        "surface-container": "#e6e8ea",
+                        "on-error": "#ffefef",
+                        "on-secondary": "#fbefff",
+                        "surface-container-highest": "#dadddf",
+                        "secondary-container": "#e4c6ff",
+                        "primary": "#a8216e",
+                        "surface-tint": "#a8216e",
+                        "on-tertiary-fixed": "#270048",
+                        "secondary-dim": "#7400c9",
+                        "surface-bright": "#f5f6f7",
+                        "tertiary-container": "#ce9aff",
+                        "secondary": "#811cd9",
+                        "on-background": "#2c2f30",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e0e3e4",
+                        "primary-dim": "#980f61",
+                        "background": "#f5f6f7",
+                        "on-primary": "#ffeff3",
+                        "outline-variant": "#abadae",
+                        "on-primary-container": "#4a002c",
+                        "inverse-on-surface": "#9b9d9e",
+                        "on-tertiary-container": "#4a0080",
+                        "on-surface-variant": "#595c5d",
+                        "error-dim": "#a70138",
+                        "inverse-primary": "#fa65b0",
+                        "on-primary-fixed-variant": "#5b0038",
+                        "surface": "#f5f6f7"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-brand-gradient {
+            background: linear-gradient(135deg, #a8216e 0%, #811cd9 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen flex flex-col">
+<!-- TopAppBar Component (from JSON) -->
+<header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50 shadow-[0_8px_30px_rgb(129,28,217,0.06)]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600 font-headline tracking-tight">SUPERBOX</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-pink-500 transition-colors font-headline font-bold" href="#">Track</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-pink-500 transition-colors font-headline font-bold" href="#">Services</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-pink-500 transition-colors font-headline font-bold" href="#">History</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-50/50 transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-surface-container-high overflow-hidden border-2 border-primary-container/20">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG2vFJDS6GtH1x02R_qOKye1mJetb6pg3GJ5PNjiNg-0ZcRCPj1ODt5yezkUo-DB1lpORnesYKpEB7hwGPqUtinNNy3yM8tmLsX4yTHkXojmT5E9wyAMayqkljR15MZ8D4YFQGqbnG7dHBMwvBpNsJtY8fvKC_sc4BEfukpLXgnZTDCLagterhH5apRDKUNhTXRjDswK2NSgf6gMyo8KjjvYwX4GCprpohgPQnIc5YfJfwFLPjj4q1cOxrjCG8p-KRiQtukSF3TL6g"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-hidden">
+<!-- Background Decorative Element -->
+<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- Form Card -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-[0_40px_80px_rgba(129,28,217,0.06)] overflow-hidden z-10">
+<div class="p-8 md:p-12">
+<div class="mb-10 text-center md:text-left">
+<h1 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-on-background mb-3">Детали заказа</h1>
+<p class="text-on-surface-variant font-body leading-relaxed">Пожалуйста, заполните форму ниже, чтобы мы могли обработать вашу доставку с максимальным комфортом.</p>
+</div>
+<form class="space-y-8">
+<!-- Name & Last Name Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4" for="first_name">Имя</label>
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-lg focus:ring-4 focus:ring-primary/20 transition-all font-body text-on-surface placeholder:text-outline-variant" id="first_name" placeholder="Введите имя" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4" for="last_name">Фамилия</label>
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-lg focus:ring-4 focus:ring-primary/20 transition-all font-body text-on-surface placeholder:text-outline-variant" id="last_name" placeholder="Введите фамилию" type="text"/>
+</div>
+</div>
+<!-- Phone Input -->
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4" for="phone">Телефон</label>
+<div class="relative">
+<span class="absolute left-6 top-1/2 -translate-y-1/2 text-outline-variant material-symbols-outlined" data-icon="phone_iphone">phone_iphone</span>
+<input class="w-full pl-14 pr-6 py-4 bg-surface-container-high border-none rounded-lg focus:ring-4 focus:ring-primary/20 transition-all font-body text-on-surface placeholder:text-outline-variant" id="phone" placeholder="+7 (___) ___-__-__" type="tel"/>
+</div>
+</div>
+<!-- Quantity & Price Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4" for="quantity">Количество</label>
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-lg focus:ring-4 focus:ring-primary/20 transition-all font-body text-on-surface" id="quantity" min="1" type="number" value="1"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4" for="total_price">Итоговая цена</label>
+<div class="relative">
+<input class="w-full px-6 py-4 bg-surface-container-low border-none rounded-lg font-headline font-bold text-primary cursor-default" id="total_price" readonly="" type="text" value="2 450 ₽"/>
+<span class="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary/40" data-icon="lock">lock</span>
+</div>
+</div>
+</div>
+<!-- File Upload Block -->
+<div class="space-y-2">
+<label class="block text-sm font-label font-semibold text-on-surface-variant ml-4">QR / Штрих-код заказа</label>
+<div class="group relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-outline-variant/30 rounded-lg hover:border-secondary/40 hover:bg-secondary/5 transition-all cursor-pointer overflow-hidden">
+<div class="flex flex-col items-center space-y-3 p-6 text-center">
+<div class="w-14 h-14 bg-secondary-container/30 text-secondary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="qr_code_scanner">qr_code_scanner</span>
+</div>
+<div class="space-y-1">
+<p class="font-headline font-bold text-on-surface">Нажмите для загрузки</p>
+<p class="text-xs text-on-surface-variant font-label">PNG, JPG или PDF (макс. 5МБ)</p>
+</div>
+</div>
+<input class="absolute inset-0 opacity-0 cursor-pointer" type="file"/>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-brand-gradient text-on-primary py-5 rounded-full font-headline font-extrabold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-3" type="submit">
+<span>Продолжить</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Footer Component (from JSON) -->
+<footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200/10 py-12 mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto space-y-4 md:space-y-0">
+<div class="flex flex-col items-center md:items-start gap-1">
+<span class="text-lg font-bold text-slate-400">SUPERBOX</span>
+<p class="font-['Inter'] text-sm tracking-wide text-slate-500 dark:text-slate-400">© 2024 SUPERBOX. The Fluid Concierge.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-400 hover:text-purple-500 font-['Inter'] text-sm hover:translate-y-[-2px] transition-transform duration-200" href="#">Privacy</a>
+<a class="text-slate-400 hover:text-purple-500 font-['Inter'] text-sm hover:translate-y-[-2px] transition-transform duration-200" href="#">Terms</a>
+<a class="text-slate-400 hover:text-purple-500 font-['Inter'] text-sm hover:translate-y-[-2px] transition-transform duration-200" href="#">Support</a>
+<a class="text-slate-400 hover:text-purple-500 font-['Inter'] text-sm hover:translate-y-[-2px] transition-transform duration-200" href="#">Careers</a>
+</div>
+</div>
+</footer>
+</body></html>

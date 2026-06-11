@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SUPERBOX - Marketplace Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#dadddf",
+              "surface-dim": "#d1d5d7",
+              "on-secondary-fixed": "#4e008a",
+              "tertiary-fixed-dim": "#c588fe",
+              "secondary-fixed-dim": "#dab4ff",
+              "on-tertiary-fixed-variant": "#54118a",
+              "on-primary-fixed": "#000000",
+              "on-surface": "#2c2f30",
+              "primary-container": "#ff6cb5",
+              "secondary-fixed": "#e4c6ff",
+              "error": "#b41340",
+              "outline": "#757778",
+              "tertiary": "#783eaf",
+              "inverse-surface": "#0c0f10",
+              "on-secondary-fixed-variant": "#7500cc",
+              "on-error-container": "#510017",
+              "tertiary-fixed": "#ce9aff",
+              "error-container": "#f74b6d",
+              "on-tertiary": "#fbefff",
+              "on-secondary-container": "#6800b6",
+              "primary-fixed": "#ff6cb5",
+              "primary-fixed-dim": "#f05da8",
+              "surface-container-low": "#eff1f2",
+              "tertiary-dim": "#6c30a2",
+              "surface-container": "#e6e8ea",
+              "on-error": "#ffefef",
+              "on-secondary": "#fbefff",
+              "surface-container-highest": "#dadddf",
+              "secondary-container": "#e4c6ff",
+              "primary": "#a8216e",
+              "surface-tint": "#a8216e",
+              "on-tertiary-fixed": "#270048",
+              "secondary-dim": "#7400c9",
+              "surface-bright": "#f5f6f7",
+              "tertiary-container": "#ce9aff",
+              "secondary": "#811cd9",
+              "on-background": "#2c2f30",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e0e3e4",
+              "primary-dim": "#980f61",
+              "background": "#f5f6f7",
+              "on-primary": "#ffeff3",
+              "outline-variant": "#abadae",
+              "on-primary-container": "#4a002c",
+              "inverse-on-surface": "#9b9d9e",
+              "on-tertiary-container": "#4a0080",
+              "on-surface-variant": "#595c5d",
+              "error-dim": "#a70138",
+              "inverse-primary": "#fa65b0",
+              "on-primary-fixed-variant": "#5b0038",
+              "surface": "#f5f6f7"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-selection-ring {
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #a8216e;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_30px_rgb(129,28,217,0.06)]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600 font-headline tracking-tight">SUPERBOX</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 dark:text-slate-400 hover:text-pink-500 transition-colors font-medium" href="#">Track</a>
+<a class="text-purple-700 dark:text-purple-300 font-extrabold border-b-2 border-purple-500 transition-all" href="#">Services</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-pink-500 transition-colors font-medium" href="#">History</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all duration-300 scale-95 active:scale-90 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm scale-95 active:scale-90 transition-transform cursor-pointer">
+<img alt="User profile" data-alt="User profile avatar smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJj5pnUUZDo3zi7pAlSK_2jL6AfAlRnlj0_kO_-5K5Vx-LdDFAQOsPkun8vZiTcog_wWViYDXcacJHmDjOW0-0AtxzmnErW8haEgP2hvmZfxbamzEJxaREIj38Rh_-n93ySDMIfSLlUveDPlinNZU51iW_lu_AVeEjndTj19MTRzcL1DX5c1af8diGE3fTtxRlTsM86WgcI8N8TkQTGWplS_WojHiDyYaGbTGsf6vx95C4bHWofWiBMyGR9-dQHNk1FV7Q4iEc7boI"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-12 md:py-20">
+<!-- Hero Title Section -->
+<div class="mb-16 text-center md:text-left">
+<h1 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight mb-4">Выберите маркетплейс</h1>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl">Откуда нужно доставить заказ? Мы обеспечим быструю и безопасную перевозку до вашего порога.</p>
+</div>
+<!-- Marketplace Selection Grid -->
+<section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
+<!-- Card: CDEK (Active State Example) -->
+<div class="relative group cursor-pointer">
+<div class="absolute -inset-0.5 bg-gradient-to-br from-primary to-secondary rounded-lg opacity-100 blur-[2px] transition duration-300"></div>
+<div class="relative bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center transition-all duration-300 shadow-xl">
+<div class="absolute top-3 right-3 text-primary">
+<span class="material-symbols-outlined" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="w-20 h-20 mb-4 flex items-center justify-center">
+<img alt="CDEK" class="max-w-full max-h-full object-contain" data-alt="CDEK marketplace and delivery logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHXvI68p51jc-wZiScE4p0bRkHzm1yWMa-3JKJjWHSeaak96y7YaVy0blqP6CtZusCO7IoO_nUxMLOJoV7C1mExKJUfLM3lKvRvv7GjAsvM6teWIrVImd9eotRur6_VbG8P4Ecrh56Z9nsa8HqIHyMEOQhTbaBSFTivo-1W6ORBMxJ03V1n6P5TIR8cNobnJ15_TA1ZUKB1vBtscx81eLnCJUU42vpl-E2zhNza8pvWE2ROmuDmmQbfSgs3IlI4qvhVY2zapy6xiu0"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">CDEK</span>
+</div>
+</div>
+<!-- Card: 5POST -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="5POST" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Abstract logistics logo representing 5POST" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEKYAgLwcEjI1t0w-jt-TmOhfs5kLZ-ets7fEgTpDUSdMIYa8B8UoQQ55KFo-D3uiP6VYvj3BTGT6FsEPKrprqe49zgKo6_LtJuKIQkMC8hrkAYN6043IoaZ7pijKJSkNuyMp9xB5oJlphwuSU1K4ZwLJPChOQrTLjumpSLMZQrwb1Lkc17NWu7VJjC39MLYM3LfU4JsUt_7O8yjVNX6oX39SyjXpj8YyRo3uUxONDVYuUDZBg_5VlmKzd2H5IpepOAhpjJ4NsiY9G"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">5POST</span>
+</div>
+</div>
+<!-- Card: DPD -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="DPD" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="DPD courier delivery brand logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtnvYT-DhqGctynC8l0iSHtdS9Rw8bQibwHc_ovj3yvNM8KqtVfGF1gmMd12uhDpqQFjr438x5ZHTynF6CizUemIGpz7DB0OMEcPKBiWs_NA-Rh7GuY5oaXBCgktRn6VtNoJpjBO_VZjQWo3nvAs0uPedauJR0Z0VbVi2qa5_JcYT076X_Qef8rNk-3KL_JTmnrWprk4hsqMrkgmJSsJZanYNQvG7GnIIIzoeIASyQ8di4IZhIqXjvJvBaLLdej4J4vYg4oL_JIpfU"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">DPD</span>
+</div>
+</div>
+<!-- Card: Avito -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Avito" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Avito marketplace brand logo colored circles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_3VPL4ymIV52HVhCkeO8btV7kjnIzSo3tU24GGV4APcfLwvUl36vld_O4z3qOmhGAtGbqvw2nkGSBcaL4EenFskzfdmnSXtyFk_ISbnCBB7VeAcMhFa6vjuZNMIPkcbYdJGzijc3cVjdd2bPGA0MhckJMptLrvKWIVRdXBD4YuOneH1dVUIDLZ3j4kr34GEX_2gilNS_aN3ih7ev7Vdqg8GjF5cEqCSYdhmJp3j3IDUiCqdpSYigNY6jxc8If3j5wMDrEBuNPakRU"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Avito</span>
+</div>
+</div>
+<!-- Card: Wildberries -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Wildberries" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Wildberries ecommerce marketplace pink logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPkH1rHZlvO43BaGQdaM2shRgC7W3jWjmpmzx-NJduwEpDy2OSY_zsOgUwz_qZ_vzOsJkYm6z3ECXgL5RA1KcuKcEl-KiphndhFzwYHgs-Tjz1gS9yJppHUfHm3-_1yzbIGzF52RYuvWCEEKMPT43u6740ZfuOKznyaFVjpIKneDk2WbYW7YbE20qkaYgaHZAkJOc1ClgmfX3dThboY1Fh0rODep9F6_wusJ7o_EKMAVvV5zftG94cYa6UE0Ol5urf9ydrMSHgX8Ig"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Wildberries</span>
+</div>
+</div>
+<!-- Card: Wildberries Opt -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Wildberries Opt" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Wildberries wholesale bulk order marketplace logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBDVWF6d293OER1xL0_HRl9HYE9lPhs0jcr5dFkON0SGZrUnigHV3qYDIiwmz3bT9ZxyISYlUk_qs-FsHCaGJl6mK4UcUqsInRDhxI-itAALOUZYcp5MyRQ_gsdpQ8_-vbVhfSXePJG9dXtXOajJp27GcBAlxlLbFM9-rokr7BSaSIN50ryupboliGHIl_Aw7hVkZizWqhVsP6mcdMkbV1ADl8obwf-cCWssPAA_w_MPz1x1TP_ITHuE6b_rej8jHbPJWnxNQZnquq"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Wildberries Opt</span>
+</div>
+</div>
+<!-- Card: Wildberries Premium -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20 overflow-hidden">
+<div class="absolute top-2 left-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full text-[10px] text-white font-bold tracking-wider">PREMIUM</div>
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Wildberries Premium" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Wildberries premium service marketplace logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvPoYw-87MRE9Ooplq-BfCXTbGGMzchKUtT5gsB0Ggwn7BBN_zwr7T19zMradFNyxYuowkCIbqMEVAAn1cOTjacs5ZVQ33MGmWdhhxk4h0rDgGvAsdRVeQqHi7nZ_8Yfn4exQ-Vq0ag3q0bvN5lpCzSqJLfCiUfOYTMq-ovZlKOMJGPfVCtZ2thLv66vE8ip1YPZP-fATi9KliD4r-fIsfxU6ajjIcz7IDMxoMi7amlfuK4C1kFSPs7Es8dxKVuU0ZzCmoGjMDM3bx"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Wildberries Premium</span>
+</div>
+</div>
+<!-- Card: Ozon -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Ozon" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Ozon marketplace blue and pink logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2b4coh26y839jbTPeD4Xzlko6s-5RyVs5YQ9Z8QaMkLO1hYrg4b8d97OiJzFJ3Am4yAkcbJXeKDivvZP0xyRRbXbuNTf2G-LbmlNbW_JOhTMhjgo4MApK9fI8H9VjXrEibveaCdZFarpZIZaV5iBjXAlQclCqa-tjMsuhKbO30TX2v8upWiuP_QixTXJBxnqHn0BMnXSUJaMVGAs-TV6aDZF8qm5tKocttCLHgWhHzYt1DzGN8tVwMtl3CA00_cHYjIJAVbAMkVgO"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Ozon</span>
+</div>
+</div>
+<!-- Card: Yandex Market -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Yandex Market" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Yandex Market yellow and black brand logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRPxzLEQ-kF9POdyNQViEG_t9EAaHjf_hQRR7VF-83oD7I0jz_5SY1WXvODGRo2M42fOXwySYyJdp71KlaTkYsNVKReVzczL5TfZRQ19TbgMi9Py9ei0e-U5_CEvHRO_BIg_qo5a4hLGoJi4BTzg3Fsac-BKKxiOdnoIyOAGeblpLW5rj0mSW-gaREN43M5OIv--fvhX9NQJm0g3Lx5Ajif5P3Yxy6cnG6WVC20e_J58l7KpWZg2xTeYVckRBylXM6B-B5dnFLTliF"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Yandex Market</span>
+</div>
+</div>
+<!-- Card: Lamoda -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Lamoda" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Lamoda fashion marketplace black logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7WPYoFM6VoPOxAgoYL0xVz6ii9YP5NLZ7WuUj28IMdKCj6y5xi1m90L64XQgDfr69weBMmoTAd3QXnOHMeADwUfpC_pVuvoyS1blFXEIg_FDr81BA94WWX11W9h_x4mauPKxbYm6z6kmhZDwkvhf3ncgmHxcFJFxKoV2wLSmoMtRVeUuWPB22e1NFfRNgWgkfQGS6EiAuJTkMMKQwJKfSsNq74tjo812KODXxAloyJneCyAjqPd2KwiRPwtyGD-5PdRqFXgxXklQk"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Lamoda</span>
+</div>
+</div>
+<!-- Card: Golden Apple -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Golden Apple" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Golden Apple cosmetics store abstract representation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs0-a-ydEigM54xyaUF9P7uPm1g0IRqABLMekWZqRvqqTrmBuyDaED3afFFB-EnwF1tx5ho7gqxTK5RH9NmHdWi-MNTR47EXnXhY2H-GKyStCnXXf8KCbUBix4Z0QDaJrHFVDfKdvQ2tb-Cx_GYh7WnZV3fAYr4cMhSchb3HX7wSlzUBwYPa3fsAlhbrIVwMq4xN3tpVqtfx7O_ju3tY7hr6svFpNZZmvlGh8d5sYf3gz-hrFVwGfV_khd7GAU0fe86qLtG9qDRfbS"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Золотое яблоко</span>
+</div>
+</div>
+<!-- Card: Letual -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Letual" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Luxury brand cosmetic logo placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnFhIeP9uKc9HyeXpEBeax2sJMmtpl-Q3lXoQrAg_T22S3krVInzSLZjYIHndKcwIchF7PN1KwWJOXOyNm97vU8LdLN_T1Tc8RJYTpFjNodUsn5BwO7VRuJiXxoAu-JBcMjoEVaujR94s6eyazrtssIxnZX2gjgjgbCeKDBMfhMjirf5TSjmrk8FU6IhVXgafgV9w84894fkCL8Ma4_ZuE-FY9F8e6PGUhlDQpm8d_WrKZ2StwIpyKoATgm4TWAFzFEdeb-luIFCA-"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Letual</span>
+</div>
+</div>
+<!-- Card: Detsky Mir -->
+<div class="group cursor-pointer hover:translate-y-[-4px] transition-all duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg h-full flex flex-col items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-primary/20">
+<div class="w-20 h-20 mb-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+<img alt="Detsky Mir" class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all" data-alt="Detsky Mir children products logo with colored circles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqfk6mSGyv-H2ZRstNtZnM_Attm1o3TMcYEv_3mTbtyxwTc1o_DcIpKVbFdCr36yUV71DesEaAYyjkb-C9GciX7BoxSb2gqfJlTF96Q2abwMxH0FlEgKuKd9AhtxXYp1BLD0smlVjQTdOO8SS22Ip46j99uqWDolTfV0F9O9RQBw1ecfw3p7wkdQvFRE0JFLSa285GprrX8_NTawBwY0he8weLIBlzMeSJkDVF7R0tFVlDJYqnejVk2FmcfHk1Nlm9JBSHRrBLXthw"/>
+</div>
+<span class="font-headline font-bold text-center text-on-surface">Детский мир</span>
+</div>
+</div>
+<!-- Custom Addition Placeholder -->
+</section>
+<!-- Fixed Action Bar (Glassmorphism) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-lg bg-surface-container-lowest/70 backdrop-blur-xl border border-white/20 p-4 rounded-xl shadow-[0_20px_50px_rgba(129,28,217,0.15)] z-40 flex items-center justify-between gap-4">
+<div class="flex-1">
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-1">Выбрано</p>
+<p class="font-headline font-bold text-on-surface truncate">CDEK Marketplace</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full font-headline font-bold shadow-lg hover:shadow-primary/40 active:scale-95 transition-all">
+                Продолжить
+            </button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 full-width py-12 border-t border-slate-200/10 tonal-shift-bg">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto space-y-4 md:space-y-0">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-lg font-bold text-slate-400 font-headline uppercase tracking-tighter">SUPERBOX</span>
+<p class="font-body text-sm tracking-wide text-slate-500 dark:text-slate-400">© 2024 SUPERBOX. The Fluid Concierge.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-body text-sm tracking-wide text-slate-400 hover:text-purple-500 hover:translate-y-[-2px] transition-all duration-200 opacity-80 hover:opacity-100" href="#">Privacy</a>
+<a class="font-body text-sm tracking-wide text-slate-400 hover:text-purple-500 hover:translate-y-[-2px] transition-all duration-200 opacity-80 hover:opacity-100" href="#">Terms</a>
+<a class="font-body text-sm tracking-wide text-slate-400 hover:text-purple-500 hover:translate-y-[-2px] transition-all duration-200 opacity-80 hover:opacity-100" href="#">Support</a>
+<a class="font-body text-sm tracking-wide text-slate-400 hover:text-purple-500 hover:translate-y-[-2px] transition-all duration-200 opacity-80 hover:opacity-100" href="#">Careers</a>
+</div>
+</div>
+</footer>
+</body></html>

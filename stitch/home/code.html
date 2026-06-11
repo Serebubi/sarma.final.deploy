@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,700;0,800;1,800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#dadddf",
+              "surface-dim": "#d1d5d7",
+              "on-secondary-fixed": "#4e008a",
+              "tertiary-fixed-dim": "#c588fe",
+              "secondary-fixed-dim": "#dab4ff",
+              "on-tertiary-fixed-variant": "#54118a",
+              "on-primary-fixed": "#000000",
+              "on-surface": "#2c2f30",
+              "primary-container": "#ff6cb5",
+              "secondary-fixed": "#e4c6ff",
+              "error": "#b41340",
+              "outline": "#757778",
+              "tertiary": "#783eaf",
+              "inverse-surface": "#0c0f10",
+              "on-secondary-fixed-variant": "#7500cc",
+              "on-error-container": "#510017",
+              "tertiary-fixed": "#ce9aff",
+              "error-container": "#f74b6d",
+              "on-tertiary": "#fbefff",
+              "on-secondary-container": "#6800b6",
+              "primary-fixed": "#ff6cb5",
+              "primary-fixed-dim": "#f05da8",
+              "surface-container-low": "#eff1f2",
+              "tertiary-dim": "#6c30a2",
+              "surface-container": "#e6e8ea",
+              "on-error": "#ffefef",
+              "on-secondary": "#fbefff",
+              "surface-container-highest": "#dadddf",
+              "secondary-container": "#e4c6ff",
+              "primary": "#a8216e",
+              "surface-tint": "#a8216e",
+              "on-tertiary-fixed": "#270048",
+              "secondary-dim": "#7400c9",
+              "surface-bright": "#f5f6f7",
+              "tertiary-container": "#ce9aff",
+              "secondary": "#811cd9",
+              "on-background": "#2c2f30",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e0e3e4",
+              "primary-dim": "#980f61",
+              "background": "#f5f6f7",
+              "on-primary": "#ffeff3",
+              "outline-variant": "#abadae",
+              "on-primary-container": "#4a002c",
+              "inverse-on-surface": "#9b9d9e",
+              "on-tertiary-container": "#4a0080",
+              "on-surface-variant": "#595c5d",
+              "error-dim": "#a70138",
+              "inverse-primary": "#fa65b0",
+              "on-primary-fixed-variant": "#5b0038",
+              "surface": "#f5f6f7"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .gradient-brand {
+            background: linear-gradient(135deg, #a8216e 0%, #811cd9 100%);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+        }
+        .ambient-glow {
+            box-shadow: 0 8px 30px rgba(129, 28, 217, 0.06);
+        }
+        .ambient-glow:hover {
+            box-shadow: 0 20px 40px rgba(129, 28, 217, 0.12);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-white/70 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_30px_rgb(129,28,217,0.06)]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1;">package_2</span>
+<span class="text-2xl font-black italic bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600 font-headline tracking-tight">SUPERBOX</span>
+</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-purple-700 font-extrabold border-b-2 border-purple-500 font-headline transition-all" href="#">Track</a>
+<a class="text-slate-500 hover:text-pink-500 transition-colors font-headline" href="#">Services</a>
+<a class="text-slate-500 hover:text-pink-500 transition-colors font-headline" href="#">History</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-50/50 transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-50/50 transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-12 pb-24">
+<!-- Hero Section -->
+<section class="mb-16 relative overflow-hidden rounded-xl p-8 md:p-12 lg:p-16">
+<div class="absolute inset-0 z-0 bg-surface-container-low opacity-50"></div>
+<div class="relative z-10 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-lowest rounded-full mb-6 ambient-glow">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="text-sm font-semibold text-on-surface-variant">📍 Грушевского, 8</span>
+</div>
+<h1 class="text-5xl md:text-6xl font-headline font-extrabold tracking-tight text-on-surface mb-6 leading-[1.1]">
+                    Оформление доставки в <span class="text-primary italic">пару кликов</span>
+</h1>
+<p class="text-xl text-on-surface-variant leading-relaxed mb-8">
+                    Выберите действие и оформите заказ быстро и удобно. Мы позаботимся о бережной транспортировке вашего груза.
+                </p>
+</div>
+<!-- Asymmetrical Image Bleed -->
+<div class="absolute -right-20 -bottom-10 w-1/2 hidden lg:block opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-[30rem] text-secondary-container" style="font-variation-settings: 'wght' 100;">inventory_2</span>
+</div>
+</section>
+<!-- Bento Grid Main Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Primary Action Card (Double Height) -->
+<button class="lg:row-span-2 group relative overflow-hidden flex flex-col justify-end p-8 text-left rounded-xl gradient-brand text-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+<div class="absolute top-8 left-8">
+<div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</div>
+</div>
+<div class="relative z-10">
+<h3 class="text-3xl font-headline font-bold mb-2">Сделать заказ</h3>
+<p class="text-white/80">Оформите новую доставку прямо сейчас</p>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[12rem]">rocket_launch</span>
+</div>
+</button>
+<!-- Search Action Card -->
+<button class="group flex flex-col justify-between p-8 text-left rounded-xl bg-surface-container-lowest ambient-glow transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">search</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface mb-1">Найти заказ</h3>
+<p class="text-on-surface-variant text-sm">Проверьте статус по номеру</p>
+</div>
+</button>
+<!-- Paid Order Card -->
+<button class="group flex flex-col justify-between p-8 text-left rounded-xl bg-surface-container-lowest ambient-glow transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-primary-container text-2xl" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface mb-1">Оплаченный заказ</h3>
+<p class="text-on-surface-variant text-sm">Управление вашими счетами</p>
+</div>
+</button>
+<!-- Home Delivery Card -->
+<button class="group flex flex-col justify-between p-8 text-left rounded-xl bg-surface-container-lowest ambient-glow transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary-dim text-2xl" style="font-variation-settings: 'FILL' 1;">home_pin</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface mb-1">Доставка на дом</h3>
+<p class="text-on-surface-variant text-sm">Курьер приедет к порогу</p>
+</div>
+</button>
+<!-- Secondary Actions Row -->
+<div class="grid grid-cols-2 gap-6 lg:col-span-1">
+<button class="flex flex-col items-center justify-center p-6 text-center rounded-xl bg-surface-container-low transition-all duration-300 hover:bg-error-container/10 group">
+<span class="material-symbols-outlined text-error mb-2 group-hover:scale-110 transition-transform">cancel</span>
+<span class="text-sm font-bold text-on-surface-variant group-hover:text-error transition-colors">Отменить</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 text-center rounded-xl bg-surface-container-low transition-all duration-300 hover:bg-tertiary-container/20 group">
+<span class="material-symbols-outlined text-tertiary mb-2 group-hover:scale-110 transition-transform">support_agent</span>
+<span class="text-sm font-bold text-on-surface-variant group-hover:text-tertiary transition-colors">Поддержка</span>
+</button>
+</div>
+</div>
+<!-- Order Status Tracker (Custom Component Preview) -->
+<div class="mt-16 p-8 rounded-xl bg-surface-container-lowest ambient-glow">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-headline font-bold text-on-surface">Текущий статус</h2>
+<span class="px-4 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">В ПУТИ</span>
+</div>
+<div class="relative w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-2/3 gradient-brand rounded-full"></div>
+</div>
+<div class="flex justify-between mt-4">
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-primary">Склад</span>
+<span class="text-[10px] text-on-surface-variant">10:30</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-primary">Сортировка</span>
+<span class="text-[10px] text-on-surface-variant">12:45</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-on-surface">В городе</span>
+<span class="text-[10px] text-on-surface-variant">Ожидается</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-outline-variant">Доставка</span>
+<span class="text-[10px] text-outline-variant">--:--</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 border-t border-slate-200/10 py-12 tonal-shift-bg">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto space-y-4 md:space-y-0">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-lg font-bold text-slate-400 font-headline">SUPERBOX</span>
+<p class="font-['Inter'] text-sm tracking-wide text-slate-500">© 2024 SUPERBOX. The Fluid Concierge.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-400 hover:text-purple-500 transition-transform duration-200 hover:translate-y-[-2px] text-sm" href="#">Privacy</a>
+<a class="text-slate-400 hover:text-purple-500 transition-transform duration-200 hover:translate-y-[-2px] text-sm" href="#">Terms</a>
+<a class="text-slate-400 hover:text-purple-500 transition-transform duration-200 hover:translate-y-[-2px] text-sm" href="#">Support</a>
+<a class="text-slate-400 hover:text-purple-500 transition-transform duration-200 hover:translate-y-[-2px] text-sm" href="#">Careers</a>
+</div>
+</div>
+</footer>
+</body></html>
