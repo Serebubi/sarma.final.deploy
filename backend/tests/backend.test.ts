@@ -44,6 +44,31 @@ function createBitrixCategoryResponse() {
   return createBitrixResponse({ categories: bitrixDealCategories });
 }
 
+function createCapturingBitrixFetch(dealPayloads: URLSearchParams[]) {
+  return vi.fn<typeof fetch>(async (input, init) => {
+    const url = String(input);
+
+    if (url.includes("crm.duplicate.findbycomm")) {
+      return createBitrixResponse({});
+    }
+
+    if (url.includes("crm.contact.add")) {
+      return createBitrixResponse(321);
+    }
+
+    if (url.includes("crm.category.list")) {
+      return createBitrixCategoryResponse();
+    }
+
+    if (url.includes("crm.deal.add")) {
+      dealPayloads.push(readFormBody(init?.body));
+      return createBitrixResponse(600 + dealPayloads.length);
+    }
+
+    throw new Error(`Unexpected fetch ${url}`);
+  });
+}
+
 describe("backend api", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -159,7 +184,7 @@ describe("backend api", () => {
     vi.stubEnv("BITRIX_DEAL_FIELD_CUSTOMER_PHONE", "UF_CRM_CUSTOMER_PHONE");
     vi.stubEnv("BITRIX_DEAL_FIELD_SOURCE_URL", "UF_CRM_SOURCE_URL");
 
-    let dealPayload: URLSearchParams | null = null;
+    const dealPayloads: URLSearchParams[] = [];
 
     const fetchMock = vi.fn<typeof fetch>(async (input, init) => {
       const url = String(input);
@@ -177,7 +202,7 @@ describe("backend api", () => {
       }
 
       if (url.includes("crm.deal.add")) {
-        dealPayload = readFormBody(init?.body);
+        dealPayloads.push(readFormBody(init?.body));
         return createBitrixResponse(654);
       }
 
@@ -199,6 +224,7 @@ describe("backend api", () => {
       .field("sourceUrl", "https://www.wildberries.ru/catalog/123/detail.aspx");
 
     expect(createResponse.status).toBe(201);
+    const dealPayload = dealPayloads[0];
     expect(dealPayload?.get("fields[CATEGORY_ID]")).toBe("10");
     expect(dealPayload?.get("fields[STAGE_ID]")).toBe("C10:NEW");
     expect(dealPayload?.get("fields[UF_CRM_ORDER_NUMBER]")).toBe(createResponse.body.order.orderNumber);
@@ -210,7 +236,7 @@ describe("backend api", () => {
   });
 
   it("keeps pickup standard item count and total amount empty in Bitrix when they are not part of the form", async () => {
-    let dealPayload: URLSearchParams | null = null;
+    const dealPayloads: URLSearchParams[] = [];
 
     const fetchMock = vi.fn<typeof fetch>(async (input, init) => {
       const url = String(input);
@@ -228,7 +254,7 @@ describe("backend api", () => {
       }
 
       if (url.includes("crm.deal.add")) {
-        dealPayload = readFormBody(init?.body);
+        dealPayloads.push(readFormBody(init?.body));
         return createBitrixResponse(654);
       }
 
@@ -249,6 +275,7 @@ describe("backend api", () => {
       .field("sourceUrl", "https://www.wildberries.ru/catalog/123/detail.aspx");
 
     expect(createResponse.status).toBe(201);
+    const dealPayload = dealPayloads[0];
     expect(dealPayload?.get("fields[CATEGORY_ID]")).toBe("10");
     expect(dealPayload?.get("fields[STAGE_ID]")).toBe("C10:NEW");
     expect(dealPayload?.get("fields[UF_CRM_1774909222920]")).toBe(createResponse.body.order.orderNumber);
@@ -305,6 +332,155 @@ describe("backend api", () => {
     expect(createResponse.status).toBe(201);
     expect(createResponse.body.order.pickupPoint).toBe("chelyuskintsev_donetsk");
     expect(createResponse.body.order.pickupAddress).toBe("Донецк, ПВЗ");
+  });
+
+  it("routes every available order form to the expected Bitrix funnel", async () => {
+    const dealPayloads: URLSearchParams[] = [];
+    vi.stubGlobal("fetch", createCapturingBitrixFetch(dealPayloads));
+    const app = createApp();
+
+    const paidBaseFields = {
+      orderType: "pickup_paid",
+      pickupPoint: "chelyuskintsev_donetsk",
+      firstName: "Ivan",
+      lastName: "Ivanov",
+      phone: "+79997776655",
+    };
+    const cases = [
+      {
+        name: "cdek",
+        fields: { ...paidBaseFields, marketplace: "cdek", trackingNumber: "12345678901" },
+        expectedCategoryId: "1",
+      },
+      {
+        name: "5post",
+        fields: { ...paidBaseFields, marketplace: "5post", trackingNumber: "5POST-123456", pickupCode: "4455" },
+        expectedCategoryId: "2",
+      },
+      {
+        name: "dpd",
+        fields: { ...paidBaseFields, marketplace: "dpd", trackingNumber: "DPD-123456", pickupCode: "5566" },
+        expectedCategoryId: "2",
+      },
+      {
+        name: "wildberries",
+        fields: { ...paidBaseFields, marketplace: "wildberries", pickupCode: "WB-7788" },
+        attachment: "wildberries-qr.png",
+        expectedCategoryId: "5",
+      },
+      {
+        name: "ozon",
+        fields: { ...paidBaseFields, marketplace: "ozon", pickupCode: "OZON-7788" },
+        attachment: "ozon-qr.png",
+        expectedCategoryId: "4",
+      },
+      {
+        name: "yandex_market",
+        fields: { ...paidBaseFields, marketplace: "yandex_market", pickupCode: "YM-7788" },
+        attachment: "yandex-market-qr.png",
+        expectedCategoryId: "3",
+      },
+      {
+        name: "avito",
+        fields: { ...paidBaseFields, marketplace: "avito", pickupCode: "AVITO-7788" },
+        attachment: "avito-qr.png",
+        expectedCategoryId: "3",
+      },
+      {
+        name: "lamoda",
+        fields: { ...paidBaseFields, marketplace: "lamoda", pickupCode: "LAMODA-7788" },
+        attachment: "lamoda-qr.png",
+        expectedCategoryId: "2",
+      },
+      {
+        name: "goldapple",
+        fields: { ...paidBaseFields, marketplace: "goldapple", trackingNumber: "GA-123456", pickupCode: "GA-7788" },
+        attachment: "goldapple-order.png",
+        expectedCategoryId: "7",
+      },
+      {
+        name: "letual",
+        fields: { ...paidBaseFields, marketplace: "letual", trackingNumber: "LET-123456", pickupCode: "LET-7788" },
+        attachment: "letual-order.png",
+        expectedCategoryId: "7",
+      },
+      {
+        name: "detmir",
+        fields: { ...paidBaseFields, marketplace: "detmir", trackingNumber: "DM-123456", pickupCode: "DM-7788" },
+        attachment: "detmir-order.png",
+        expectedCategoryId: "2",
+      },
+      {
+        name: "bulky",
+        fields: { ...paidBaseFields, marketplace: "bulky", transportCompany: "delovye_linii", trackingNumber: "BULKY-42" },
+        bulkyAttachments: ["bulky-order.png"],
+        expectedCategoryId: "2",
+      },
+      {
+        name: "courier",
+        fields: { ...paidBaseFields, marketplace: "courier", senderName: "Ozon", trackingNumber: "COURIER-42" },
+        attachment: "courier-order.png",
+        expectedCategoryId: "7",
+      },
+      {
+        name: "link order",
+        fields: {
+          orderType: "pickup_standard",
+          marketplace: "wildberries",
+          pickupPoint: "chelyuskintsev_donetsk",
+          firstName: "Ivan",
+          lastName: "Ivanov",
+          phone: "+79997776655",
+          sourceUrl: "https://www.wildberries.ru/catalog/123/detail.aspx",
+        },
+        expectedCategoryId: "10",
+      },
+    ];
+
+    let linkOrderNumber = "";
+
+    for (const scenario of cases) {
+      let createRequest = request(app).post("/orders/create");
+      for (const [key, value] of Object.entries(scenario.fields)) {
+        createRequest = createRequest.field(key, value);
+      }
+      if ("attachment" in scenario && scenario.attachment) {
+        createRequest = createRequest.attach("attachment", Buffer.from(`${scenario.name} file`), scenario.attachment);
+      }
+      if ("bulkyAttachments" in scenario && scenario.bulkyAttachments) {
+        for (const fileName of scenario.bulkyAttachments) {
+          createRequest = createRequest.attach("bulkyAttachments", Buffer.from(`${scenario.name} file`), fileName);
+        }
+      }
+
+      const createResponse = await createRequest;
+      const dealPayload = dealPayloads.at(-1);
+
+      expect(createResponse.status, scenario.name).toBe(201);
+      expect(createResponse.body.order.crmSyncState, scenario.name).toBe("synced");
+      expect(dealPayload?.get("fields[CATEGORY_ID]"), scenario.name).toBe(scenario.expectedCategoryId);
+      expect(dealPayload?.get("fields[STAGE_ID]"), scenario.name).toBe(`C${scenario.expectedCategoryId}:NEW`);
+
+      if (scenario.name === "link order") {
+        linkOrderNumber = createResponse.body.order.orderNumber;
+      }
+    }
+
+    let deliveryRequest = request(app)
+      .post("/orders/create")
+      .field("orderType", "home_delivery")
+      .field("orderNumbers", JSON.stringify([linkOrderNumber]))
+      .field("deliveryAddress", "Mariupol, Lenina 1")
+      .field("deliveryDate", "2026-06-15")
+      .field("deliveryTimeSlot", "12:00-15:00");
+
+    const deliveryResponse = await deliveryRequest;
+    const deliveryDealPayload = dealPayloads.at(-1);
+
+    expect(deliveryResponse.status, "home_delivery").toBe(201);
+    expect(deliveryResponse.body.order.crmSyncState, "home_delivery").toBe("synced");
+    expect(deliveryDealPayload?.get("fields[CATEGORY_ID]"), "home_delivery").toBe("8");
+    expect(deliveryDealPayload?.get("fields[STAGE_ID]"), "home_delivery").toBe("C8:NEW");
   });
 
   it("creates a home delivery request from existing order numbers", async () => {
@@ -833,8 +1009,11 @@ describe("backend api", () => {
       trackingNumber: null,
       senderName: null,
       shipmentNumber: null,
+      transportCompany: null,
       pickupCode: null,
+      size: null,
       sourceUrl: null,
+      additionalInfo: null,
       deliveryAddress: "Мариуполь, Ленина 1",
       deliveryDate: "2026-03-28",
       deliveryTimeSlot: "12:00-15:00",

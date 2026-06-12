@@ -7,6 +7,7 @@ import {
   createPickupStandardOrderSchema,
   isSupportedDomainForMarketplace,
   marketplaceExampleUrls,
+  marketplaces,
   previewLinkSchema,
 } from "../src/index";
 
@@ -151,17 +152,17 @@ describe("shared schemas", () => {
     expect(result.trackingNumber).toBe("LET-123456");
   });
 
-  it("validates wildberries premium paid pickup input", () => {
+  it("validates wildberries paid pickup input", () => {
     const result = createPaidPickupOrderSchema.parse({
       orderType: "pickup_paid",
-      marketplace: "wildberries_premium",
+      marketplace: "wildberries",
       firstName: "Иван",
       lastName: "Иванов",
       phone: "+79997776655",
       totalAmount: 25000,
     });
 
-    expect(result.marketplace).toBe("wildberries_premium");
+    expect(result.marketplace).toBe("wildberries");
     expect(result.totalAmount).toBe(25000);
   });
 
@@ -173,12 +174,13 @@ describe("shared schemas", () => {
       lastName: "Иванов",
       phone: "+79997776655",
       senderName: "OZON",
+      transportCompany: "delovye_linii",
       trackingNumber: "BULKY-42",
       pickupCode: "7788",
     });
 
     expect(result.marketplace).toBe("bulky");
-    expect(result.senderName).toBe("OZON");
+    expect(result.transportCompany).toBe("delovye_linii");
   });
 
   it("validates courier paid pickup input", () => {
@@ -237,6 +239,6 @@ describe("shared schemas", () => {
   it("provides example links for all marketplaces", () => {
     expect(marketplaceExampleUrls.wildberries).toContain("wildberries.ru");
     expect(marketplaceExampleUrls.ozon).toContain("ozon.ru");
-    expect(Object.keys(marketplaceExampleUrls)).toHaveLength(13);
+    expect(Object.keys(marketplaceExampleUrls)).toHaveLength(marketplaces.length);
   });
 });

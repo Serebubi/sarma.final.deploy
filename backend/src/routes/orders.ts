@@ -30,6 +30,16 @@ function parseOptionalNumberField(rawValue: unknown, fieldLabel: string) {
   return parsed;
 }
 
+function getOptionalOrderTotals(body: Record<string, string | undefined>) {
+  const itemCount = parseOptionalNumberField(body.itemCount, "Количество товаров");
+  const totalAmount = parseOptionalNumberField(body.totalAmount, "Общая сумма");
+
+  return {
+    ...(itemCount === undefined ? {} : { itemCount }),
+    ...(totalAmount === undefined ? {} : { totalAmount }),
+  };
+}
+
 function getUploadedFile(files: Request["files"], fieldName: string) {
   if (!files || Array.isArray(files)) {
     return null;
@@ -130,8 +140,7 @@ export function createOrderRouter(orderService: OrderService) {
                           senderName: body.senderName,
                           trackingNumber: body.trackingNumber,
                           pickupCode: body.pickupCode,
-                          itemCount: parseOptionalNumberField(body.itemCount, "Количество товаров"),
-                          totalAmount: parseOptionalNumberField(body.totalAmount, "Общая сумма"),
+                          ...getOptionalOrderTotals(body),
                         }
                       : {
                           orderType: body.orderType,
@@ -140,8 +149,7 @@ export function createOrderRouter(orderService: OrderService) {
                           firstName: body.firstName,
                           lastName: body.lastName,
                           phone: body.phone,
-                          itemCount: parseOptionalNumberField(body.itemCount, "Количество товаров"),
-                          totalAmount: parseOptionalNumberField(body.totalAmount, "Общая сумма"),
+                          ...getOptionalOrderTotals(body),
                           trackingNumber: body.trackingNumber,
                           pickupCode: body.pickupCode,
                         };
