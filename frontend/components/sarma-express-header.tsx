@@ -2,13 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import type { ReactNode } from "react";
 
-const primaryNavigationItems = [
+type NavigationItem = {
+  key: string;
+  label: string;
+  href: string;
+  icon?: () => ReactNode;
+};
+
+const primaryNavigationItems: NavigationItem[] = [
   { key: "calculator", label: "Калькулятор", href: "/calculator" },
   { key: "tracking", label: "Отслеживание", href: "/superbox?flow=order_lookup" },
 ];
 
-const serviceNavigationItems = [
+const serviceNavigationItems: NavigationItem[] = [
   { key: "internet-delivery", label: "Доставка из интернет-магазинов РФ", href: "/superbox?flow=pickup_paid", icon: CartIcon },
   { key: "russia", label: "Отправления в РФ", href: "/superbox?flow=ship_russia", icon: BoxIcon },
   { key: "cancel-order", label: "Отмена заказа", href: "/cancel-order", icon: CancelOrderIcon },
@@ -16,10 +25,12 @@ const serviceNavigationItems = [
   { key: "ftl", label: "Полная загрузка (FTL)", href: "/ftl", icon: TruckIcon },
 ];
 
-const secondaryNavigationItems = [
+const secondaryNavigationItems: NavigationItem[] = [
   { key: "business", label: "Бизнесу", href: "/superbox?flow=business" },
   { key: "pickup-points", label: "Пункты выдачи", href: "/pickup-points" },
 ];
+
+const mobileNavigationItems = [...primaryNavigationItems, ...serviceNavigationItems, ...secondaryNavigationItems];
 
 export function SarmaExpressHeader({
   activeItem,
@@ -28,6 +39,7 @@ export function SarmaExpressHeader({
   activeItem?: string;
   onNavigate?: (href: string, key: string) => void;
 }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isServicesActive = serviceNavigationItems.some((item) => item.key === activeItem);
   const renderNavigationLink = (item: { key: string; label: string; href: string }) => {
     const isActive = item.key === activeItem;
@@ -54,8 +66,61 @@ export function SarmaExpressHeader({
 
   return (
     <div className="sticky top-3 z-50 px-3 pt-3 sm:px-4 lg:px-5">
-      <header className="mx-auto w-full max-w-[1240px] rounded-[18px] border border-[#d9e1ef] bg-white/95 shadow-[0_18px_44px_rgba(16,45,88,0.08)] backdrop-blur-xl">
-        <div className="mx-auto flex w-full flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+      <header className="mx-auto w-full max-w-[1240px] overflow-visible rounded-[18px] border border-[#d9e1ef] bg-white/95 shadow-[0_18px_44px_rgba(16,45,88,0.08)] backdrop-blur-xl">
+        <div className="mx-auto flex w-full items-center justify-between gap-3 px-4 py-3 lg:hidden">
+          <Link href="/" className="min-w-0 shrink-0" onClick={() => setIsMobileMenuOpen(false)}>
+            <SarmaExpressLogo compact />
+          </Link>
+
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#d7e5fb] bg-[#f6f9ff] text-[#123763] shadow-[0_10px_22px_rgba(16,45,88,0.08)]"
+            aria-label={isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+          >
+            {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
+
+        <nav
+          className={`grid gap-2 border-t border-[#edf1f7] px-4 pb-4 text-sm font-bold text-[#12243f] transition-all lg:hidden ${
+            isMobileMenuOpen ? "max-h-[640px] pt-2 opacity-100" : "max-h-0 overflow-hidden border-t-transparent pb-0 opacity-0"
+          }`}
+        >
+          {mobileNavigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.key === activeItem;
+
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                onClick={(event) => {
+                  setIsMobileMenuOpen(false);
+
+                  if (!onNavigate) return;
+                  event.preventDefault();
+                  onNavigate(item.href, item.key);
+                }}
+                className={`flex min-h-12 items-center gap-3 rounded-2xl px-4 transition-all ${
+                  isActive
+                    ? "bg-[#edf4ff] text-[#2c6ed3] shadow-[inset_0_0_0_1px_rgba(44,110,211,0.08)]"
+                    : "bg-[#f8fbff] text-[#24324f] hover:bg-[#f1f7ff] hover:text-[#2c6ed3]"
+                }`}
+              >
+                {Icon ? (
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[#2c6ed3]">
+                    {Icon()}
+                  </span>
+                ) : null}
+                <span className="min-w-0 leading-5">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mx-auto hidden w-full gap-3 px-5 py-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:px-6">
           <Link href="/" className="shrink-0">
             <SarmaExpressLogo />
           </Link>
@@ -77,7 +142,7 @@ export function SarmaExpressHeader({
                 <ChevronDownIcon />
               </button>
 
-              <div className="pointer-events-none absolute right-0 top-full w-[392px] translate-y-2 overflow-hidden rounded-b-[18px] border border-[#e1e8f4] bg-white opacity-0 shadow-[0_22px_48px_rgba(16,45,88,0.14)] transition-all duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 max-sm:fixed max-sm:left-6 max-sm:right-6 max-sm:top-[136px] max-sm:w-auto" role="menu">
+              <div className="pointer-events-none absolute right-0 top-full z-[80] w-[392px] translate-y-2 overflow-hidden rounded-b-[18px] border border-[#e1e8f4] bg-white opacity-0 shadow-[0_22px_48px_rgba(16,45,88,0.14)] transition-all duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 max-sm:fixed max-sm:left-6 max-sm:right-6 max-sm:top-[136px] max-sm:w-auto" role="menu">
                 <div className="h-1 bg-[#2c72d8]" />
                 <div className="py-2">
                   {serviceNavigationItems.map(({ key, label, href, icon: Icon }) => {
@@ -98,7 +163,7 @@ export function SarmaExpressHeader({
                         role="menuitem"
                       >
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[#2c6ed3]">
-                          <Icon />
+                          {Icon?.()}
                         </span>
                         <span>{label}</span>
                       </Link>
@@ -116,7 +181,7 @@ export function SarmaExpressHeader({
   );
 }
 
-export function SarmaExpressLogo({ onTruck = false }: { onTruck?: boolean }) {
+export function SarmaExpressLogo({ compact = false, onTruck = false }: { compact?: boolean; onTruck?: boolean }) {
   if (onTruck) {
     return (
       <div className="relative h-[56px] w-[258px] overflow-hidden">
@@ -132,16 +197,32 @@ export function SarmaExpressLogo({ onTruck = false }: { onTruck?: boolean }) {
   }
 
   return (
-    <div className="relative h-[44px] w-[220px] overflow-hidden sm:h-[48px] sm:w-[240px]">
+    <div className={`relative overflow-hidden ${compact ? "h-[38px] w-[190px]" : "h-[44px] w-[220px] sm:h-[48px] sm:w-[240px]"}`}>
       <Image
         src="/brand/sarma-express-logo-header-final.png"
         alt="Сарма Экспресс"
         fill
         priority
-        sizes="(max-width: 640px) 220px, 240px"
+        sizes={compact ? "190px" : "(max-width: 640px) 220px, 240px"}
         className="object-contain object-left"
       />
     </div>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+      <path d="M5 7h14M5 12h14M5 17h14" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
   );
 }
 

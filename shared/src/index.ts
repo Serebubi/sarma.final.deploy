@@ -112,7 +112,7 @@ export const pickupPointOptions = [
     label: "Донецк, ПВЗ",
     city: "Донецк",
     pointType: "ПВЗ",
-    address: "Ворошиловский р-н, ул. Челюскинцев, 184 (по Шевченко)",
+    address: "ул. Челюскинцев, 184",
     thresholdKg: 30,
     hours: "Ежедневно, 09:00–18:00",
     contact: "7 (949) 539-60-30",
@@ -392,12 +392,6 @@ export const createPaidPickupOrderSchema = z
       }
       if (!payload.senderName) {
         ctx.addIssue({ code: "custom", path: ["senderName"], message: "Укажите название отправителя или интернет-магазина" });
-      }
-      if (payload.itemCount == null) {
-        ctx.addIssue({ code: "custom", path: ["itemCount"], message: "Укажите количество товаров" });
-      }
-      if (payload.totalAmount == null) {
-        ctx.addIssue({ code: "custom", path: ["totalAmount"], message: "Укажите сумму заказа" });
       }
       return;
     }

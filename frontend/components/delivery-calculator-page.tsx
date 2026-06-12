@@ -480,7 +480,7 @@ export function DeliveryCalculatorPage() {
                 event.preventDefault();
               }}
             >
-              <div className="grid gap-3 lg:grid-cols-2">
+              <div className="grid items-start gap-3 lg:grid-cols-2">
                 <FieldShell icon={<PinIcon />} label="Откуда">
                   <ModernSelect options={cityOptions} value={state.from} onChange={(value) => setCityField("from", value)} />
                   <DeliveryModeSelector
@@ -551,61 +551,73 @@ export function DeliveryCalculatorPage() {
                   </FieldShell>
                 </div>
 
-                {hasCourierMode ? (
-                  <div className="grid gap-3 lg:col-span-2">
-                    <FieldShell icon={<HomeIcon />} label="Адрес для курьера">
-                      <ModernSelect
-                        options={addressTypeOptions}
-                        value={state.addressType}
-                        onChange={(value) => setField("addressType", value)}
-                      />
-                    </FieldShell>
+                <div
+                  aria-hidden={!hasCourierMode}
+                  className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out lg:col-span-2 ${
+                    hasCourierMode ? "grid-rows-[1fr] opacity-100" : "pointer-events-none grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="min-h-0">
+                    <div className="grid gap-3">
+                      <FieldShell icon={<HomeIcon />} label="Адрес для курьера">
+                        <ModernSelect
+                          disabled={!hasCourierMode}
+                          options={addressTypeOptions}
+                          value={state.addressType}
+                          onChange={(value) => setField("addressType", value)}
+                        />
+                      </FieldShell>
 
-                    {state.addressType === "apartment" ? (
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <FieldShell icon={<StairsIcon />} label="Этаж">
+                      {state.addressType === "apartment" ? (
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <FieldShell icon={<StairsIcon />} label="Этаж">
+                            <input
+                              aria-label="Этаж"
+                              placeholder="Например, 5"
+                              inputMode="numeric"
+                              value={state.floor}
+                              className={fieldClassName}
+                              tabIndex={hasCourierMode ? undefined : -1}
+                              onChange={(event) => setField("floor", event.target.value)}
+                            />
+                          </FieldShell>
+
+                          <ToggleField
+                            checked={state.hasElevator}
+                            disabled={!hasCourierMode}
+                            icon={<LiftIcon />}
+                            label="Лифт"
+                            offText="Нет лифта"
+                            onText="Есть лифт"
+                            onChange={(value) => setField("hasElevator", value)}
+                          />
+                        </div>
+                      ) : (
+                        <FieldShell icon={<RouteIcon />} label="Занос от парковки, м">
                           <input
-                            aria-label="Этаж"
-                            placeholder="Например, 5"
-                            inputMode="numeric"
-                            value={state.floor}
+                            aria-label="Занос от парковки, м"
+                            placeholder="Например, 35"
+                            inputMode="decimal"
+                            value={state.privateCarryDistance}
                             className={fieldClassName}
-                            onChange={(event) => setField("floor", event.target.value)}
+                            tabIndex={hasCourierMode ? undefined : -1}
+                            onChange={(event) => setField("privateCarryDistance", event.target.value)}
                           />
                         </FieldShell>
+                      )}
 
-                        <ToggleField
-                          checked={state.hasElevator}
-                          icon={<LiftIcon />}
-                          label="Лифт"
-                          offText="Нет лифта"
-                          onText="Есть лифт"
-                          onChange={(value) => setField("hasElevator", value)}
-                        />
-                      </div>
-                    ) : (
-                      <FieldShell icon={<RouteIcon />} label="Занос от парковки, м">
-                      <input
-                        aria-label="Занос от парковки, м"
-                        placeholder="Например, 35"
-                        inputMode="decimal"
-                        value={state.privateCarryDistance}
-                        className={fieldClassName}
-                        onChange={(event) => setField("privateCarryDistance", event.target.value)}
+                      <ToggleField
+                        checked={state.needLoaders}
+                        disabled={!hasCourierMode}
+                        icon={<CargoIcon />}
+                        label="Грузчики"
+                        offText="Не нужны"
+                        onText="Нужны"
+                        onChange={(value) => setField("needLoaders", value)}
                       />
-                    </FieldShell>
-                    )}
-
-                    <ToggleField
-                      checked={state.needLoaders}
-                      icon={<CargoIcon />}
-                      label="Грузчики"
-                      offText="Не нужны"
-                      onText="Нужны"
-                      onChange={(value) => setField("needLoaders", value)}
-                    />
+                    </div>
                   </div>
-                ) : null}
+                </div>
 
               </div>
             </form>
@@ -704,7 +716,7 @@ function ResultPanel({
 
       {result.status === "ready" ? (
         <>
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="mt-3 grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
             <Metric label="Расчётный вес" value={`${numberFormatter.format(result.chargeableWeight)} кг`} />
             <Metric label="Категория" value={result.band.category} />
             <Metric label="Тариф" value={result.band.label} />
@@ -1277,7 +1289,7 @@ function DeliveryModeSelector({
 
   return (
     <div className="mt-3">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2">
         {options.map((option) => {
           const isSelected = value === option.value && option.available;
 
@@ -1286,7 +1298,7 @@ function DeliveryModeSelector({
               key={option.value}
               type="button"
               disabled={!option.available}
-              className={`min-h-10 rounded-2xl border px-3 text-sm font-black transition ${
+              className={`min-h-10 min-w-0 rounded-2xl border px-3 text-sm font-black transition ${
                 isSelected
                   ? "border-[#3f74cb] bg-[#3f74cb] text-white shadow-[0_12px_22px_rgba(46,90,175,0.22)]"
                   : option.available
@@ -1375,10 +1387,10 @@ function PickupPointSelector({
   }
 
   return (
-    <div ref={rootRef} className="relative mt-2">
+    <div ref={rootRef} className="relative mt-2 min-w-0">
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[#cfe0f7] bg-white/68 px-3 py-2.5 text-left text-sm font-bold text-[#173862] transition hover:bg-white"
+        className="flex min-w-0 w-full items-center justify-between gap-3 rounded-2xl border border-[#cfe0f7] bg-white/68 px-3 py-2.5 text-left text-sm font-bold text-[#173862] transition hover:bg-white"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         onClick={() => setIsOpen((open) => !open)}
@@ -1487,9 +1499,9 @@ function ResultMessage({ status }: { status: "empty" | "same-route" | "no-route"
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-white/70 p-3">
-      <div className="text-xs font-black uppercase tracking-[0.14em] text-[#7891b5]">{label}</div>
-      <div className="mt-1 text-base font-black text-[#173862]">{value}</div>
+    <div className="min-w-0 rounded-2xl bg-white/70 p-3">
+      <div className="truncate text-xs font-black uppercase tracking-[0.14em] text-[#7891b5]">{label}</div>
+      <div className="mt-1 break-words text-base font-black text-[#173862]">{value}</div>
     </div>
   );
 }
@@ -1500,18 +1512,20 @@ function PriceLine({ label, value }: { label: string; value: number }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[#d8e6f8] pb-3 last:border-b-0 last:pb-0">
-      <span className="text-sm font-bold text-[#587295]">{label}</span>
-      <span className="text-base font-black text-[#173862]">{formatMoney(value)}</span>
+    <div className="flex min-w-0 items-center justify-between gap-4 border-b border-[#d8e6f8] pb-3 last:border-b-0 last:pb-0">
+      <span className="min-w-0 text-sm font-bold text-[#587295]">{label}</span>
+      <span className="shrink-0 text-base font-black text-[#173862]">{formatMoney(value)}</span>
     </div>
   );
 }
 
 function ModernSelect<T extends string>({
+  disabled = false,
   options,
   value,
   onChange,
 }: {
+  disabled?: boolean;
   options: Array<SelectOption<T>>;
   value: T;
   onChange: (value: T) => void;
@@ -1521,7 +1535,7 @@ function ModernSelect<T extends string>({
   const selectedOption = options.find((option) => option.value === value) ?? options[0];
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen || disabled) {
       return;
     }
 
@@ -1544,13 +1558,20 @@ function ModernSelect<T extends string>({
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen]);
+  }, [disabled, isOpen]);
+
+  useEffect(() => {
+    if (disabled) {
+      setIsOpen(false);
+    }
+  }, [disabled]);
 
   return (
-    <div ref={rootRef} className="relative mt-1.5">
+    <div ref={rootRef} className="relative mt-1.5 min-w-0">
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-3 rounded-[18px] bg-transparent text-left text-base font-bold text-[#173862] outline-none"
+        disabled={disabled}
+        className="flex min-w-0 w-full items-center justify-between gap-3 rounded-[18px] bg-transparent text-left text-base font-bold text-[#173862] outline-none disabled:pointer-events-none"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         onClick={() => setIsOpen((open) => !open)}
@@ -1605,6 +1626,7 @@ function ModernSelect<T extends string>({
 
 function ToggleField({
   checked,
+  disabled = false,
   icon,
   label,
   offText,
@@ -1612,6 +1634,7 @@ function ToggleField({
   onChange,
 }: {
   checked: boolean;
+  disabled?: boolean;
   icon: ReactNode;
   label: string;
   offText: string;
@@ -1619,7 +1642,7 @@ function ToggleField({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="calculator-field-shell flex items-center gap-3 rounded-[22px] border border-white/58 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(240,246,255,0.9)_100%)] px-4 py-2.5 text-[#173862] shadow-[0_16px_30px_rgba(28,78,160,0.12),inset_0_1px_0_rgba(255,255,255,0.75)]">
+    <div className="calculator-field-shell flex min-w-0 items-center gap-3 rounded-[22px] border border-white/58 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(240,246,255,0.9)_100%)] px-4 py-2.5 text-[#173862] shadow-[0_16px_30px_rgba(28,78,160,0.12),inset_0_1px_0_rgba(255,255,255,0.75)]">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#edf5ff_0%,#dce9ff_100%)] text-[#3c75d0] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)]">
         {icon}
       </span>
@@ -1627,6 +1650,7 @@ function ToggleField({
         <span className="block text-xs font-black uppercase tracking-[0.18em] text-[#17212f]">{label}</span>
         <button
           type="button"
+          disabled={disabled}
           className="mt-1.5 flex w-full items-center justify-between gap-3 text-left text-base font-bold text-[#173862]"
           onClick={() => onChange(!checked)}
         >
@@ -1652,7 +1676,7 @@ function FieldShell({
   children: ReactNode;
 }) {
   return (
-    <div className="calculator-field-shell flex items-center gap-3 rounded-[22px] border border-white/58 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(240,246,255,0.9)_100%)] px-4 py-2.5 text-[#173862] shadow-[0_16px_30px_rgba(28,78,160,0.12),inset_0_1px_0_rgba(255,255,255,0.75)]">
+    <div className="calculator-field-shell flex min-w-0 items-center gap-3 rounded-[22px] border border-white/58 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(240,246,255,0.9)_100%)] px-4 py-2.5 text-[#173862] shadow-[0_16px_30px_rgba(28,78,160,0.12),inset_0_1px_0_rgba(255,255,255,0.75)]">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#edf5ff_0%,#dce9ff_100%)] text-[#3c75d0] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)]">
         {icon}
       </span>

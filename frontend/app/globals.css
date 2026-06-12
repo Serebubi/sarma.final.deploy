@@ -32,6 +32,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -111,6 +112,16 @@ textarea:focus-visible {
   box-shadow:
     0 0 0 3px rgba(140, 183, 255, 0.18),
     0 14px 28px rgba(39, 77, 146, 0.12) !important;
+}
+
+.sarma-pickup-form [data-has-error="true"] input,
+.sarma-pickup-form [data-has-error="true"] textarea,
+.sarma-pickup-form [data-has-error="true"] select,
+.sarma-pickup-form [data-has-error="true"] button:not([type="submit"]) {
+  border-color: rgba(239, 68, 68, 0.62) !important;
+  box-shadow:
+    0 0 0 4px rgba(239, 68, 68, 0.1),
+    0 14px 28px rgba(146, 39, 39, 0.1) !important;
 }
 
 ::selection {

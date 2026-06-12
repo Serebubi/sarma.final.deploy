@@ -70,7 +70,7 @@ export const cityPickupPoints: Partial<Record<CityKey, CityPickupPoint[]>> = {
     {
       type: "pvz",
       label: "ПВЗ",
-      address: "Ворошиловский р-н, ул. Челюскинцев, 184 (по Шевченко)",
+      address: "ул. Челюскинцев, 184",
       thresholdKg: 30,
       hours: "Ежедневно, 09:00–18:00",
       contact: "7 (949) 539-60-30",

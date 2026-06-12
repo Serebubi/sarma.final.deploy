@@ -25,6 +25,8 @@ const vehicleRows = [
   ["Спецтехника", "Под запрос", "-", "-", "Негабарит, особые условия"],
 ];
 
+const vehicleColumnLabels = ["Тип транспорта", "Грузоподъёмность", "Объём", "Паллеты", "Когда нужен"];
+
 const includedItems = [
   "Отдельная машина под ваш груз",
   "Подача по адресу загрузки",
@@ -135,17 +137,23 @@ export function FtlPage() {
         </div>
 
         <div className="mt-7 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_50px_rgba(16,45,88,0.1)] ring-1 ring-[#dce6f4]">
-          <div className="grid grid-cols-[1.05fr_0.75fr_0.65fr_0.55fr_1.15fr] bg-[#eaf3ff] px-5 py-4 text-xs font-black uppercase tracking-[0.12em] text-[#356ac8]">
-            <span>Тип транспорта</span>
-            <span>Грузоподъёмность</span>
-            <span>Объём</span>
-            <span>Паллеты</span>
-            <span>Когда нужен</span>
+          <div className="hidden grid-cols-[1.05fr_0.75fr_0.65fr_0.55fr_1.15fr] bg-[#eaf3ff] px-5 py-4 text-xs font-black uppercase tracking-[0.12em] text-[#356ac8] md:grid">
+            {vehicleColumnLabels.map((label) => (
+              <span key={label}>{label}</span>
+            ))}
           </div>
           {vehicleRows.map((row) => (
-            <div key={row[0]} className="grid grid-cols-1 gap-2 border-t border-[#dce6f4] px-5 py-4 text-sm font-semibold text-[#173862] md:grid-cols-[1.05fr_0.75fr_0.65fr_0.55fr_1.15fr]">
+            <div key={row[0]} className="grid grid-cols-1 gap-3 border-t border-[#dce6f4] px-5 py-4 text-sm font-semibold text-[#173862] md:grid-cols-[1.05fr_0.75fr_0.65fr_0.55fr_1.15fr] md:gap-2">
               {row.map((cell, index) => (
-                <span key={`${row[0]}-${index}`} className={index === 0 ? "font-black" : "text-[#58739d]"}>
+                <span
+                  key={`${row[0]}-${index}`}
+                  className={`flex flex-col gap-1 rounded-2xl bg-[#f7faff] px-3 py-2 md:block md:rounded-none md:bg-transparent md:p-0 ${
+                    index === 0 ? "font-black text-[#173862]" : "text-[#58739d]"
+                  }`}
+                >
+                  <span className="text-[11px] font-black uppercase tracking-[0.12em] text-[#356ac8] md:hidden">
+                    {vehicleColumnLabels[index]}
+                  </span>
                   {cell}
                 </span>
               ))}

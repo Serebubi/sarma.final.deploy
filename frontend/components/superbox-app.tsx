@@ -1543,37 +1543,84 @@ function SuccessState({
   secondaryLabel?: string;
   onSecondary?: () => void;
 }) {
+  const syncOk = order.crmSyncState !== "failed";
+
   return (
-    <section className="mx-auto max-w-[820px] text-center">
-      <div className="success-orb mx-auto text-3xl">✓</div>
-      <h1 className="mt-8 font-[family-name:var(--font-display)] text-5xl leading-none text-[color:var(--foreground)] sm:text-6xl">{title}</h1>
-      <p className="mt-3 text-lg font-semibold text-[color:var(--muted)]">№ {order.orderNumber}</p>
-      <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[color:var(--muted)]">{description}</p>
+    <section className="relative overflow-hidden bg-[#edf2f8] text-[#12243f]">
+      <div
+        className="relative overflow-visible bg-[#3f84e6] bg-cover bg-[position:72%_center] bg-no-repeat"
+        style={{ backgroundImage: "url('/brand/hero-background.png')" }}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(40,106,208,0.96)_0%,rgba(58,132,228,0.84)_40%,rgba(139,194,248,0.34)_72%,rgba(255,255,255,0.06)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_24%,rgba(255,255,255,0.44),transparent_18%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(10,47,112,0.1))]" />
+        <div className="absolute -left-28 top-1/2 h-[560px] w-[560px] -translate-y-1/2 rounded-full border border-white/18" />
+        <div className="absolute left-[5%] top-[38%] hidden h-36 w-44 bg-[radial-gradient(circle,rgba(255,255,255,0.34)_2px,transparent_2px)] [background-size:18px_18px] opacity-35 lg:block" />
 
-      <div className="mt-8 grid items-start gap-4 md:grid-cols-[1.15fr_0.85fr]">
-        <div className="soft-card rounded-[30px] p-6 text-left">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-strong)]">
-            {order.crmSyncState === "failed" ? "CRM временно недоступна" : "Ваш заказ в обработке"}
-          </p>
-          <p className="mt-3 text-base leading-8 text-[color:var(--muted)]">
-            {order.crmSyncState === "failed"
-              ? "Заказ сохранен локально, но сделка в Bitrix24 пока не создана. Повторите проверку статуса позже или свяжитесь с оператором, если CRM не восстановится."
-              : "Мы уже готовим ваш заказ к следующему этапу. Статус можно проверять без Telegram, прямо в интерфейсе."}
-          </p>
-        </div>
-        <div className="soft-card rounded-[30px] p-6 text-left">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--muted)]">Маркетплейс</p>
-          <p className="mt-3 text-lg font-semibold text-[color:var(--foreground)]">{humanizeMarketplace(order.marketplace)}</p>
+        <div className="relative mx-auto w-full max-w-[1240px] px-4 pb-16 pt-12 lg:px-6 lg:pt-16">
+          <div className="grid gap-8 lg:grid-cols-[1fr_390px] lg:items-end">
+            <div className="max-w-[760px]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/34 bg-white/14 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#2f72d8]">✓</span>
+                Заказ №{order.orderNumber}
+              </div>
+
+              <h1 className="mt-6 max-w-[760px] text-4xl font-extrabold leading-[1.04] text-white drop-shadow-[0_16px_34px_rgba(20,56,120,0.24)] sm:text-5xl lg:text-[4rem]">
+                {title}
+              </h1>
+              <p className="mt-5 max-w-[680px] text-lg font-bold leading-8 text-white/92">{description}</p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={onPrimary}
+                  className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white px-7 text-base font-extrabold text-[#173862] shadow-[0_16px_34px_rgba(16,45,88,0.18)] transition hover:-translate-y-0.5"
+                >
+                  {primaryLabel}
+                </button>
+                {secondaryLabel && onSecondary ? (
+                  <button
+                    type="button"
+                    onClick={onSecondary}
+                    className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-[linear-gradient(180deg,#2f57c0_0%,#2245a9_100%)] px-7 text-base font-extrabold text-white shadow-[0_16px_35px_rgba(24,60,142,0.3)] transition hover:-translate-y-0.5"
+                  >
+                    {secondaryLabel}
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[26px] border border-white/66 bg-white/94 p-6 text-[#173862] shadow-[0_26px_70px_rgba(16,45,88,0.18)] backdrop-blur-xl">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#356ac8]">Статус</p>
+              <p className="mt-3 text-2xl font-extrabold text-[#102a4e]">{syncOk ? "Принят в работу" : "Сохранён локально"}</p>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[#58739d]">
+                {syncOk
+                  ? "Заявка создана и передана в CRM. Статус можно проверить по номеру заказа."
+                  : "Bitrix24 сейчас недоступен, поэтому временно показываем локальный статус заказа."}
+              </p>
+              <div className="mt-5 rounded-[18px] bg-[#edf5ff] px-4 py-3">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#6d88b2]">Направление</p>
+                <p className="mt-1 text-base font-extrabold text-[#173862]">{humanizeMarketplace(order.marketplace)}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <PrimaryButton onClick={onPrimary}>{primaryLabel}</PrimaryButton>
-        {secondaryLabel && onSecondary ? <SecondaryButton onClick={onSecondary}>{secondaryLabel}</SecondaryButton> : null}
-      </div>
+      <div className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-8 lg:px-6">
+        <div className="grid items-start gap-5 lg:grid-cols-[0.95fr_1.4fr]">
+          <article className="rounded-[24px] border border-[#dce6f4] bg-white p-6 shadow-[0_24px_50px_rgba(16,45,88,0.1)]">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#356ac8]">
+              {syncOk ? "Ваш заказ в обработке" : "CRM временно недоступна"}
+            </p>
+            <p className="mt-4 text-base font-semibold leading-8 text-[#58739d]">
+              {syncOk
+                ? "Мы уже приняли данные и подготовили заказ к следующему этапу. Менеджер увидит заявку в системе."
+                : "Заказ сохранён локально, но сделка в Bitrix24 пока не создана. Проверьте статус позже или свяжитесь с оператором."}
+            </p>
+          </article>
 
-      <div className="mt-8 text-left">
-        <OrderSummaryCard order={order} />
+          <OrderSummaryCard order={order} />
+        </div>
       </div>
     </section>
   );
@@ -1612,13 +1659,13 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
   const lockMainHeaderVisible = activeFlow === "pickup_paid" && activePickup.step === 1;
   const useSarmaMarketplaceChrome =
     (activeFlow === "pickup_paid" || activeFlow === "pickup_standard") &&
-    activePickup.step <= 2 &&
-    !activePickup.result;
+    (activePickup.step <= 2 || Boolean(activePickup.result));
+  const useSarmaResultChrome = Boolean(activePickup.result || delivery.result);
   const useSarmaLookupChrome = activeFlow === "order_lookup";
   const useSarmaCancelChrome = activeFlow === "cancel_order";
   const useSarmaBusinessChrome = activeFlow === "business";
   const useSarmaShipRussiaChrome = activeFlow === "ship_russia";
-  const useSarmaChrome = useSarmaMarketplaceChrome || useSarmaLookupChrome || useSarmaCancelChrome || useSarmaBusinessChrome || useSarmaShipRussiaChrome;
+  const useSarmaChrome = useSarmaMarketplaceChrome || useSarmaResultChrome || useSarmaLookupChrome || useSarmaCancelChrome || useSarmaBusinessChrome || useSarmaShipRussiaChrome;
   const activePickupSourceUrlPlaceholder =
     activePickup.marketplace && activePickup.marketplace in marketplaceExampleUrls
       ? marketplaceExampleUrls[activePickup.marketplace as MarketplaceId]
