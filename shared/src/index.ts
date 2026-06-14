@@ -114,7 +114,7 @@ export const pickupPointOptions = [
     pointType: "ПВЗ",
     address: "ул. Челюскинцев, 184",
     thresholdKg: 30,
-    hours: "Ежедневно, 09:00–18:00",
+    hours: "Пн–Пт 09:00–18:00, Сб 10:00–15:00, Вс — выходной",
     contact: "7 (949) 539-60-30",
   },
   {
@@ -123,7 +123,7 @@ export const pickupPointOptions = [
     city: "Донецк",
     pointType: "Склад",
     address: "ул. Куйбышева, 70/13 (Стройдеревня, 8 склад)",
-    hours: "Пн–Пт, 08:00–18:00, Вс — выходной",
+    hours: "Пн–Пт 08:00–17:00, Сб 10:00–15:00, Вс — выходной",
     contact: "7 (949) 050-22-48",
   },
   {
@@ -181,7 +181,7 @@ export const pickupPointOptions = [
     city: "Ростов-на-Дону",
     pointType: "Склад",
     address: "ул. Арсенальная д.1",
-    hours: "Ежедневно, 10:00–21:00",
+    hours: "Ежедневно, 10:00–19:00",
     contact: "7 (989) 500-00-38",
   },
   {

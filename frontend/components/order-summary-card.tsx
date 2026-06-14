@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import { humanizeMarketplace, type OrderRecord } from "shared";
 
 const statusLabels: Record<OrderRecord["status"], string> = {
@@ -16,22 +20,29 @@ interface OrderSummaryCardProps {
 }
 
 export function OrderSummaryCard({ order, compact = false, hideSensitiveDetails = false }: OrderSummaryCardProps) {
+  const [isCopied, setIsCopied] = useState(false);
   const primaryStatusLabel = order.crmStageName ?? statusLabels[order.status];
   const customerName = [order.customer.firstName, order.customer.lastName].filter(Boolean).join(" ") || "Клиент";
-  const isTrackingPickupOrder =
-    order.orderType === "pickup_paid" &&
-    (order.marketplace === "cdek" || order.marketplace === "5post" || order.marketplace === "dpd" || order.marketplace === "avito");
   const isHomeDelivery = order.orderType === "home_delivery";
-  const trackingPickupLabel =
-    order.marketplace === "cdek"
-      ? "Получение CDEK"
-      : order.marketplace === "5post"
-        ? "Получение 5POST"
-        : order.marketplace === "dpd"
-          ? "Получение DPD"
-          : "Получение Avito";
 
   const detailCardClass = "rounded-[20px] bg-[linear-gradient(180deg,#f8fbff_0%,#edf5ff_100%)] p-4 ring-1 ring-[#dce6f4]";
+  const copyOrderNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(order.orderNumber);
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = order.orderNumber;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.top = "-9999px";
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand("copy");
+      document.body.removeChild(field);
+    }
+    setIsCopied(true);
+    window.setTimeout(() => setIsCopied(false), 1600);
+  };
 
   return (
     <article className="rounded-[24px] border border-[#dce6f4] bg-white p-6 text-[#173862] shadow-[0_24px_50px_rgba(16,45,88,0.1)]">
@@ -43,8 +54,18 @@ export function OrderSummaryCard({ order, compact = false, hideSensitiveDetails 
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex rounded-full bg-[#edf5ff] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#356ac8]">
-            Заказ №{order.orderNumber}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex rounded-full bg-[#edf5ff] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#356ac8]">
+              Заказ №{order.orderNumber}
+            </div>
+            <button
+              type="button"
+              onClick={() => void copyOrderNumber()}
+              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#cfe0f5] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#356ac8] shadow-[0_10px_20px_rgba(36,78,150,0.08)] transition hover:bg-[#f5f9ff] focus:outline-none focus:ring-2 focus:ring-[#9fc5ff]"
+              aria-label={`Скопировать номер заказа ${order.orderNumber}`}
+            >
+              {isCopied ? "Скопировано" : "Скопировать номер"}
+            </button>
           </div>
           <h3 className="text-3xl font-extrabold leading-none text-[#102a4e]">
             {primaryStatusLabel}
@@ -58,15 +79,15 @@ export function OrderSummaryCard({ order, compact = false, hideSensitiveDetails 
         </div>
       </div>
 
-      <dl className={`mt-5 grid gap-4 ${hideSensitiveDetails ? "" : compact ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
-        {hideSensitiveDetails ? null : (
+      {!hideSensitiveDetails ? (
+        <dl className={`mt-5 grid gap-4 ${compact ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
           <div className={detailCardClass}>
             <dt className="text-xs font-black uppercase tracking-[0.24em] text-[#7a92b7]">Клиент</dt>
             <dd className="mt-2 text-sm font-extrabold text-[#173862]">{customerName}</dd>
             <dd className="mt-1 text-sm font-semibold text-[#7d91b2]">{order.customer.phone}</dd>
           </div>
-        )}
-      </dl>
+        </dl>
+      ) : null}
 
       {!hideSensitiveDetails && isHomeDelivery && order.relatedOrderNumbers.length > 0 ? (
         <div className={`mt-5 ${detailCardClass}`}>
