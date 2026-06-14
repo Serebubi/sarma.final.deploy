@@ -1619,7 +1619,7 @@ function SuccessState({
             </p>
           </article>
 
-          <OrderSummaryCard order={order} />
+          <OrderSummaryCard order={order} hideSensitiveDetails />
         </div>
       </div>
     </section>
@@ -3575,7 +3575,7 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
 
             <div className="space-y-4">
               {lookupOrders.map((order) => (
-                <OrderSummaryCard key={order.id} order={order} compact />
+                <OrderSummaryCard key={order.id} order={order} compact hideSensitiveDetails />
               ))}
             </div>
           </div>
@@ -4159,9 +4159,6 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
                 Логистика для компаний, которым важна регулярность
               </h2>
             </div>
-            <p className="max-w-[520px] text-sm font-semibold leading-7 text-[#58739d] lg:ml-auto">
-              Страница сделана легче, чем сервисные разделы: с быстрым объяснением ценности, понятными сценариями и короткой заявкой.
-            </p>
           </section>
 
           <section className="mt-7 grid gap-5 md:grid-cols-3">
@@ -4226,10 +4223,6 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
               onSubmit={(event) => event.preventDefault()}
             >
               <h2 className="text-3xl font-extrabold text-[#102a4e]">Заявка онлайн</h2>
-              <p className="mt-2 text-sm font-semibold leading-6 text-[#58739d]">
-                Поля можно связать с CRM или оставить как форму предварительного расчета.
-              </p>
-
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <label>
                   <span className={labelClass}>Компания</span>
