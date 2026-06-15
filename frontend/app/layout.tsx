@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 
+import { SiteDocumentsFooter } from "@/components/site-documents-footer";
+
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -30,6 +32,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${displayFont.variable} ${bodyFont.variable} font-[family-name:var(--font-body)] antialiased`}>
         {children}
+        <SiteDocumentsFooter />
       </body>
     </html>
   );
