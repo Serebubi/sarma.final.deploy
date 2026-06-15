@@ -92,7 +92,7 @@ describe("backend api", () => {
   });
 
   it("creates an order, syncs it to Bitrix, and refreshes status from the deal stage", async () => {
-    const fetchMock = vi.fn<typeof fetch>(async (input) => {
+    const fetchMock = vi.fn<typeof fetch>(async (input, init) => {
       const url = String(input);
 
       if (url.includes("crm.duplicate.findbycomm")) {
@@ -115,8 +115,19 @@ describe("backend api", () => {
         return createBitrixResponse({
           ID: 654,
           CONTACT_ID: 321,
-          STAGE_ID: "UC_FBIO6R",
+          STAGE_ID: "C7:S06_KURER_PEREME",
         });
+      }
+
+      if (url.includes("crm.status.list")) {
+        const body = readFormBody(init?.body);
+        expect(body.get("filter[ENTITY_ID]")).toBe("DEAL_STAGE_7");
+        return createBitrixResponse([
+          {
+            STATUS_ID: "C7:S06_KURER_PEREME",
+            NAME: "Передан курьеру",
+          },
+        ]);
       }
 
       throw new Error(`Unexpected fetch ${url}`);
@@ -148,9 +159,9 @@ describe("backend api", () => {
     const fetchResponse = await request(app).get(`/orders/${orderNumber}`);
     expect(fetchResponse.status).toBe(200);
     expect(fetchResponse.body.order.marketplace).toBe("wildberries");
-    expect(fetchResponse.body.order.status).toBe("READY_FOR_PICKUP");
-    expect(fetchResponse.body.order.crmStageId).toBe("UC_FBIO6R");
-    expect(fetchResponse.body.order.crmStageName).toBe("заказ готов к выдаче");
+    expect(fetchResponse.body.order.status).toBe("PROCESSING");
+    expect(fetchResponse.body.order.crmStageId).toBe("C7:S06_KURER_PEREME");
+    expect(fetchResponse.body.order.crmStageName).toBe("Передан курьеру");
   });
 
   it("keeps the local order when Bitrix is unavailable during creation", async () => {

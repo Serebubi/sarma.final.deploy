@@ -36,6 +36,11 @@ interface BitrixDealCategory {
   NAME?: string;
 }
 
+interface BitrixDealStage {
+  STATUS_ID?: string | number;
+  NAME?: string | null;
+}
+
 type BitrixDealFieldKey =
   | "orderNumber"
   | "orderType"
@@ -433,6 +438,7 @@ function createSnapshot(input: {
   crmContactId?: string | null;
   crmDealId?: string | null;
   crmStageId?: string | null;
+  crmStageName?: string | null;
   status?: OrderStatus | null;
 }) {
   const crmStageId = input.crmStageId ?? null;
@@ -442,7 +448,7 @@ function createSnapshot(input: {
     crmContactId: input.crmContactId ?? null,
     crmDealId: input.crmDealId ?? null,
     crmStageId,
-    crmStageName: humanizeBitrixStage(crmStageId),
+    crmStageName: input.crmStageName ?? humanizeBitrixStage(crmStageId),
     status: input.status ?? mapBitrixStageToOrderStatus(crmStageId) ?? "PROCESSING",
   } satisfies BitrixSyncSnapshot;
 }
@@ -455,6 +461,7 @@ export class BitrixService {
   ) {}
 
   private dealCategoriesPromise: Promise<BitrixDealCategory[]> | null = null;
+  private dealStageNamesByEntityPromise = new Map<string, Promise<Map<string, string>>>();
 
   private async getWebhookBaseUrl() {
     if (this.configuredWebhookBaseUrl) {
@@ -549,6 +556,66 @@ export class BitrixService {
     return categoryId === "0" ? "NEW" : `C${categoryId}:NEW`;
   }
 
+  private getDealStageEntityId(stageId: string | null) {
+    const match = stageId?.match(/^C(\d+):/i);
+    return match ? `DEAL_STAGE_${match[1]}` : "DEAL_STAGE";
+  }
+
+  private getDealStageKey(stageId: string | null) {
+    if (!stageId) {
+      return null;
+    }
+
+    const [, suffix = stageId] = stageId.split(":");
+    return suffix;
+  }
+
+  private async getDealStageNamesByEntity(entityId: string) {
+    if (!this.dealStageNamesByEntityPromise.has(entityId)) {
+      this.dealStageNamesByEntityPromise.set(entityId, this.loadDealStageNamesByEntity(entityId));
+    }
+
+    return this.dealStageNamesByEntityPromise.get(entityId)!;
+  }
+
+  private async loadDealStageNamesByEntity(entityId: string) {
+    const stages = await this.callMethod<BitrixDealStage[]>("crm.status.list", {
+      order: { SORT: "ASC" },
+      filter: { ENTITY_ID: entityId },
+    });
+    const namesById = new Map<string, string>();
+
+    for (const stage of Array.isArray(stages) ? stages : []) {
+      const statusId = normalizeScalarId(stage.STATUS_ID);
+      const name = normalizeScalarId(stage.NAME);
+
+      if (!statusId || !name) {
+        continue;
+      }
+
+      namesById.set(statusId, name);
+      const statusKey = this.getDealStageKey(statusId);
+      if (statusKey) {
+        namesById.set(statusKey, name);
+      }
+    }
+
+    return namesById;
+  }
+
+  private async resolveDealStageName(stageId: string | null) {
+    if (!stageId) {
+      return null;
+    }
+
+    try {
+      const namesById = await this.getDealStageNamesByEntity(this.getDealStageEntityId(stageId));
+      return namesById.get(stageId) ?? namesById.get(this.getDealStageKey(stageId) ?? "") ?? humanizeBitrixStage(stageId);
+    } catch {
+      return humanizeBitrixStage(stageId);
+    }
+  }
+
   async syncOrder(order: OrderRecord, attachmentUrl: string | null, productAttachmentUrl: string | null = null): Promise<BitrixSyncSnapshot> {
     const crmContactId = await this.findOrCreateContact(order);
     const createdDeal = await this.createDeal(order, crmContactId, attachmentUrl, productAttachmentUrl);
@@ -577,12 +644,14 @@ export class BitrixService {
       id: order.crmDealId,
     });
     const crmStageId = normalizeScalarId(deal.STAGE_ID) ?? order.crmStageId;
+    const crmStageName = await this.resolveDealStageName(crmStageId);
 
     return createSnapshot({
       crmSyncState: "synced",
       crmContactId: normalizeScalarId(deal.CONTACT_ID) ?? order.crmContactId,
       crmDealId: normalizeScalarId(deal.ID) ?? order.crmDealId,
       crmStageId,
+      crmStageName,
       status: mapBitrixStageToOrderStatus(crmStageId) ?? order.status,
     });
   }
