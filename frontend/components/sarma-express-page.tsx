@@ -42,7 +42,7 @@ export function SarmaExpressPage() {
                 Рассчитать доставку
               </Link>
               <Link
-                href="/superbox?flow=order_lookup"
+                href="/sarma-express?flow=order_lookup"
                 className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-white px-8 text-lg font-semibold text-[#1f2c47] shadow-[0_18px_35px_rgba(18,42,82,0.16)] transition-transform duration-200 hover:-translate-y-0.5"
               >
                 <TrackIcon />

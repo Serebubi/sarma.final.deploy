@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { SuperboxApp } from "@/components/superbox-app";
+import { SarmaExpressApp } from "@/components/sarma-express-app";
 
 export const metadata: Metadata = {
   title: "Отмена заказа | Сарма Экспресс",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CancelOrderPage() {
   return (
     <Suspense fallback={null}>
-      <SuperboxApp initialFlow="cancel_order" />
+      <SarmaExpressApp initialFlow="cancel_order" />
     </Suspense>
   );
 }

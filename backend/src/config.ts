@@ -19,7 +19,7 @@ const defaultCorsOrigins = [
 export const config = {
   port: Number(process.env.PORT ?? 4000),
   apiOrigins: [...new Set([...defaultCorsOrigins, ...parseCorsOrigins(process.env.CORS_ORIGIN ?? "")])],
-  supportUrl: process.env.SUPPORT_URL ?? "https://t.me/priemzakazovsuperbox",
+  supportUrl: process.env.SUPPORT_URL ?? "https://t.me/sarmaexpress",
   storageDir: path.resolve(process.cwd(), "storage"),
   uploadsDir: path.resolve(process.cwd(), "storage", "uploads"),
   dataFile: path.resolve(process.cwd(), "storage", "data", "orders.json"),
