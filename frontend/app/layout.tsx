@@ -19,8 +19,8 @@ const bodyFont = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "SUPERBOX",
-  description: "Сервис оформления заказов SUPERBOX",
+  title: "Сарма Экспресс",
+  description: "Сервис оформления и отслеживания заказов Сарма Экспресс",
 };
 
 export default function RootLayout({

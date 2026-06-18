@@ -39,7 +39,7 @@ import {
 } from "shared";
 
 import { ApiError, cancelOrder, createHomeDeliveryOrder, createPickupOrder, fetchOrder, lookupOrder as lookupTrackedOrder } from "@/lib/api";
-import { SarmaExpressHeader } from "@/components/sarma-express-header";
+import { SarmaExpressHeader, SarmaExpressLogo } from "@/components/sarma-express-header";
 
 import { FlowShell } from "./flow-shell";
 import { OrderSummaryCard } from "./order-summary-card";
@@ -320,15 +320,8 @@ function normalizeOrderNumbersInput(values: string[]) {
 
 function BrandMark() {
   return (
-    <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
-      <Image
-        src="/brand/superbox-logo.jpg"
-        alt="SUPERBOX logo"
-        width={40}
-        height={40}
-        className="h-10 w-10 object-cover"
-        priority
-      />
+    <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white">
+      <Image src="/brand/sarma-express-logo-cropped.png" alt="Сарма Экспресс" width={40} height={40} className="h-10 w-10 object-contain" priority />
     </span>
   );
 }
@@ -1632,7 +1625,7 @@ function isPhoneLookupQuery(query: string) {
   return /^[+\d\s()-]+$/.test(trimmed) && (digits.length === 10 || digits.length === 11);
 }
 
-export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId } = {}) {
+export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: FlowId } = {}) {
   const searchParams = useSearchParams();
   const requestedFlow = searchParams.get("flow");
   const [activeFlow, setActiveFlow] = useState<FlowId>(() => requestedFlow ? resolveFlowFromSearchParam(requestedFlow) : initialFlow);
@@ -3719,7 +3712,7 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
   const renderSupportFlow = () => (
     <FlowShell
       eyebrow="Telegram support"
-      title="Поддержка SUPERBOX"
+      title="Поддержка Сарма Экспресс"
       description="Если вопрос касается уже созданного заказа или нестандартной ситуации, откроем диалог с оператором без лишнего поиска контактов."
       align="center"
       className="mx-auto max-w-[760px]"
@@ -4343,17 +4336,10 @@ export function SuperboxApp({ initialFlow = "overview" }: { initialFlow?: FlowId
         <div className="flex items-center justify-between gap-4">
           <button type="button" onClick={() => openFlow("overview")} className="flex items-center gap-3 rounded-full">
             <BrandMark />
-            <Image
-              src="/brand/superbox-wordmark.png"
-              alt="Супер Бокс"
-              width={1878}
-              height={560}
-              className="h-9 w-auto object-contain sm:h-11"
-              priority
-            />
+            <SarmaExpressLogo compact />
             <span className="hidden">
-              <span className="font-serif font-normal text-[#1a2e35]">Супер</span>
-              <span className="font-serif font-normal text-[#c0176b]">Бокс</span>
+              <span className="font-serif font-normal text-[#1a2e35]">Сарма</span>
+              <span className="font-serif font-normal text-[#c0176b]">Экспресс</span>
             </span>
           </button>
 

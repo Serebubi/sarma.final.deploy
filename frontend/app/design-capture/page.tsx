@@ -90,10 +90,10 @@ export default function DesignCapturePage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 overflow-hidden rounded-[28px] bg-[linear-gradient(145deg,#ff2d7a,#7a00ff)] p-1 shadow-[0_20px_40px_rgba(122,0,255,0.18)]">
-              <Image src="/brand/superbox-logo.jpg" alt="SUPERBOX logo" fill className="rounded-[24px] object-cover" priority />
+              <Image src="/brand/sarma-express-logo-cropped.png" alt="Сарма Экспресс" fill className="rounded-[24px] object-contain" priority />
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--accent-strong)]">SUPERBOX design capture</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--accent-strong)]">Сарма Экспресс design capture</p>
               <h1 className="font-[family-name:var(--font-display)] text-4xl text-[color:var(--foreground)]">Коммерческий UI handoff для MVP</h1>
               <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
                 Один длинный холст с ключевыми состояниями интерфейса: домашний экран, карточки маркетплейсов, заказ по ссылке, самостоятельный заказ через QR, доставка на дом и status/cancel flow.

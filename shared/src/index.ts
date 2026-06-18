@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const pickupAddress = "ДНР, г. Мариуполь, ул. Грушевского, 8 ПН-СБ с 10:00 до 19:00";
 export const supportTelegramUrl =
-  process.env.NEXT_PUBLIC_SUPPORT_URL ?? process.env.SUPPORT_URL ?? "https://t.me/priemzakazovsuperbox";
+  process.env.NEXT_PUBLIC_SUPPORT_URL ?? process.env.SUPPORT_URL ?? "https://t.me/sarmaexpress";
 export const bulkyAttachmentLimit = 10;
 
 export const marketplaces = [

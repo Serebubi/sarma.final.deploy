@@ -690,11 +690,11 @@ export class BitrixService {
 
     const dealId = await this.callMethod<string | number>("crm.deal.add", {
       fields: {
-        TITLE: `SUPERBOX #${order.orderNumber}`,
+        TITLE: `Сарма Экспресс #${order.orderNumber}`,
         CATEGORY_ID: categoryId,
         STAGE_ID: this.buildInitialStageId(categoryId),
         SOURCE_ID: "WEB",
-        ORIGINATOR_ID: "SUPERBOX",
+        ORIGINATOR_ID: "SARMA_EXPRESS",
         ORIGIN_ID: order.orderNumber,
         CONTACT_ID: crmContactId,
         OPPORTUNITY: order.totalAmount ?? undefined,
