@@ -84,11 +84,19 @@ describe("backend api", () => {
   });
 
   it("parses multiple cors origins from env format", () => {
-    expect(parseCorsOrigins("https://site-1.example, https://site-2.example , https://site-3.example")).toEqual([
+    expect(parseCorsOrigins("https://site-1.example, https://site-2.example/ , https://site-3.example")).toEqual([
       "https://site-1.example",
       "https://site-2.example",
       "https://site-3.example",
     ]);
+  });
+
+  it("allows the production Sarma Express origin", async () => {
+    const app = createApp();
+
+    const response = await request(app).options("/orders/lookup").set("Origin", "http://sarma-express.ru");
+
+    expect(response.headers["access-control-allow-origin"]).toBe("http://sarma-express.ru");
   });
 
   it("creates an order, syncs it to Bitrix, and refreshes status from the deal stage", async () => {
