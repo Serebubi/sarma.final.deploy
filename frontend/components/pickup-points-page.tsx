@@ -83,6 +83,10 @@ const pickupPointCoordinates: Partial<Record<(typeof pickupPointOptions)[number]
   kubysheva_warehouse: [47.9949161, 37.7690267],
   mendeleeva_volnovakha: [47.5155566, 37.5341609],
   ostrovskogo_makeevka: [48.0436158, 37.965839],
+  pobedy_gorlovka: [48.299763, 38.024886],
+  internatsionalnaya_gorlovka_warehouse: [48.3062, 38.0429],
+  gorkogo_melitopol: [46.845675, 35.362846],
+  arsenalnaya_rostov_warehouse: [47.280283, 39.683105],
   grushevskogo_mariupol: [47.120196, 37.5122688],
 };
 
@@ -101,7 +105,7 @@ const initialPickupPointId = pickupPoints[0]?.id ?? "";
 const defaultMapCenter: [number, number] = [47.9936, 37.8026];
 const defaultZoom = 8;
 const yandexMapsApiKey =
-  process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY ?? "31cff1bb-042d-41ba-9090-69d37fc1f396";
+  process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY ?? "53bb6d36-1ca8-499a-9a23-634b8f6b6736";
 
 export function PickupPointsPage() {
   const [activePointId, setActivePointId] = useState(initialPickupPointId);
@@ -170,7 +174,7 @@ export function PickupPointsPage() {
         const resolvedCoords: [number, number][] = [];
 
         for (const point of pickupPoints) {
-          const coordinates = point.coordinates ?? (await resolvePointCoordinates(ymaps, point.geocodeQuery));
+          const coordinates = point.coordinates ?? (await resolvePointCoordinates(ymaps, point.geocodeQuery).catch(() => null));
 
           if (!coordinates) {
             continue;
