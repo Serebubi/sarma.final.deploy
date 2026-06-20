@@ -14,19 +14,18 @@ type NavigationItem = {
 
 const primaryNavigationItems: NavigationItem[] = [
   { key: "calculator", label: "Калькулятор", href: "/calculator" },
-  { key: "tracking", label: "Отслеживание", href: "/superbox?flow=order_lookup" },
+  { key: "tracking", label: "Отслеживание", href: "/sarma-express?flow=order_lookup" },
 ];
 
 const serviceNavigationItems: NavigationItem[] = [
-  { key: "internet-delivery", label: "Доставка из интернет-магазинов РФ", href: "/superbox?flow=pickup_paid", icon: CartIcon },
-  { key: "russia", label: "Отправления в РФ", href: "/superbox?flow=ship_russia", icon: BoxIcon },
-  { key: "cancel-order", label: "Отмена заказа", href: "/cancel-order", icon: CancelOrderIcon },
+  { key: "internet-delivery", label: "Доставка из интернет-магазинов РФ", href: "/sarma-express?flow=pickup_paid", icon: CartIcon },
+  { key: "russia", label: "Отправления в РФ", href: "/sarma-express?flow=ship_russia", icon: BoxIcon },
   { key: "ltl", label: "Сборные грузы (LTL)", href: "/ltl", icon: StackIcon },
   { key: "ftl", label: "Полная загрузка (FTL)", href: "/ftl", icon: TruckIcon },
 ];
 
 const secondaryNavigationItems: NavigationItem[] = [
-  { key: "business", label: "Бизнесу", href: "/superbox?flow=business" },
+  { key: "business", label: "Бизнесу", href: "/sarma-express?flow=business" },
   { key: "pickup-points", label: "Пункты выдачи", href: "/pickup-points" },
 ];
 

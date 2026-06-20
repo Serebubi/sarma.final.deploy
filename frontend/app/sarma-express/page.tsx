@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { SarmaExpressPage } from "@/components/sarma-express-page";
+import { SarmaExpressApp } from "@/components/sarma-express-app";
 
 export const metadata: Metadata = {
   title: "Сарма Экспресс",
-  description: "Отдельная промо-страница Сарма Экспресс для ежедневной доставки на Новые Территории.",
+  description: "Сервис оформления и отслеживания заказов Сарма Экспресс.",
 };
 
 export default function SarmaExpressRoutePage() {
-  return <SarmaExpressPage />;
+  return (
+    <Suspense fallback={null}>
+      <SarmaExpressApp />
+    </Suspense>
+  );
 }

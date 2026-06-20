@@ -218,6 +218,29 @@ function buildBody(payload: Record<string, unknown>) {
   return params;
 }
 
+function buildDuplicateFindByCommQuery(payload: Record<string, unknown>) {
+  const params = new URLSearchParams();
+  const entityType = normalizeScalarId(payload.entity_type as string | number | null | undefined);
+  const communicationType = normalizeScalarId(payload.type as string | number | null | undefined);
+  const values = Array.isArray(payload.values) ? payload.values : [payload.values];
+
+  if (entityType) {
+    params.set("entity_type", entityType);
+  }
+  if (communicationType) {
+    params.set("type", communicationType);
+  }
+
+  values.forEach((value) => {
+    const normalized = normalizeScalarId(value as string | number | null | undefined);
+    if (normalized) {
+      params.append("values[]", normalized);
+    }
+  });
+
+  return params;
+}
+
 function buildPhoneVariants(phone: string) {
   const digits = phone.replace(/\D/g, "");
   const variants = new Set<string>();
@@ -483,12 +506,12 @@ export class BitrixService {
       throw new BitrixSyncError("Не настроен webhook Bitrix24.");
     }
 
-    const response = await this.fetchImpl(`${webhookBaseUrl}${method}.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: buildBody(payload),
+    const query =
+      method === "crm.duplicate.findbycomm"
+        ? buildDuplicateFindByCommQuery(payload).toString()
+        : buildBody(payload).toString();
+    const response = await this.fetchImpl(`${webhookBaseUrl}${method}.json${query ? `?${query}` : ""}`, {
+      method: "GET",
     });
 
     const data = (await response.json().catch(() => null)) as BitrixApiResponse<T> | null;
@@ -690,11 +713,11 @@ export class BitrixService {
 
     const dealId = await this.callMethod<string | number>("crm.deal.add", {
       fields: {
-        TITLE: `SUPERBOX #${order.orderNumber}`,
+        TITLE: `Сарма Экспресс #${order.orderNumber}`,
         CATEGORY_ID: categoryId,
         STAGE_ID: this.buildInitialStageId(categoryId),
         SOURCE_ID: "WEB",
-        ORIGINATOR_ID: "SUPERBOX",
+        ORIGINATOR_ID: "SARMA_EXPRESS",
         ORIGIN_ID: order.orderNumber,
         CONTACT_ID: crmContactId,
         OPPORTUNITY: order.totalAmount ?? undefined,

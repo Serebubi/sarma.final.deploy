@@ -100,7 +100,8 @@ const pickupPoints: PickupPoint[] = pickupPointOptions.map((point) => ({
 const initialPickupPointId = pickupPoints[0]?.id ?? "";
 const defaultMapCenter: [number, number] = [47.9936, 37.8026];
 const defaultZoom = 8;
-const yandexMapsApiKey = process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY;
+const yandexMapsApiKey =
+  process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY ?? "31cff1bb-042d-41ba-9090-69d37fc1f396";
 
 export function PickupPointsPage() {
   const [activePointId, setActivePointId] = useState(initialPickupPointId);
