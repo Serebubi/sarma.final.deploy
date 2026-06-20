@@ -155,10 +155,6 @@ export function createOrderRouter(orderService: OrderService) {
                         };
         const payload = createOrderSchema.parse(rawPayload);
 
-        if (payload.orderType === "pickup_paid" && payload.marketplace === "bulky" && bulkyAttachmentFiles.length === 0) {
-          throw new HttpError(400, "Прикрепите QR, штрих-код или скриншот товара.");
-        }
-
         if (
           payload.orderType === "pickup_paid" &&
           payload.marketplace !== "cdek" &&

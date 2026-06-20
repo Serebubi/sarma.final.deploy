@@ -20,7 +20,6 @@ const primaryNavigationItems: NavigationItem[] = [
 const serviceNavigationItems: NavigationItem[] = [
   { key: "internet-delivery", label: "Доставка из интернет-магазинов РФ", href: "/sarma-express?flow=pickup_paid", icon: CartIcon },
   { key: "russia", label: "Отправления в РФ", href: "/sarma-express?flow=ship_russia", icon: BoxIcon },
-  { key: "cancel-order", label: "Отмена заказа", href: "/cancel-order", icon: CancelOrderIcon },
   { key: "ltl", label: "Сборные грузы (LTL)", href: "/ltl", icon: StackIcon },
   { key: "ftl", label: "Полная загрузка (FTL)", href: "/ftl", icon: TruckIcon },
 ];

@@ -214,8 +214,8 @@ const paidFieldCopyByMarketplace: Partial<Record<MarketplaceId | SpecialPickupId
     itemCountLabel: "Количество товаров",
     totalAmountLabel: "Итоговая цена всех товаров",
     attachmentLabel: "QR / штрих-код заказа / скриншот товара или груза",
-    attachmentHint: "PNG, JPG или PDF до 10 MB. До 10 файлов.",
-    attachmentRequiredError: "Прикрепите QR, штрих-код или скриншот товара.",
+    attachmentHint: "Не обязательно. PNG, JPG или PDF до 10 MB. До 10 файлов.",
+    attachmentRequiredError: "",
   },
 };
 
@@ -1865,7 +1865,6 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
     ) {
       nextErrors.pickupPoint = `Выберите пункт выдачи из списка ${activePickupTargetGuide.marketplaceName}`;
     }
-    if (isBulkyPaid && activePickup.bulkyAttachments.length === 0) nextErrors.attachment = paidFieldCopy.attachmentRequiredError;
     if (activeFlow === "pickup_paid" && !usesTrackingPickupFields && !isBulkyPaid && !activePickup.attachment) nextErrors.attachment = paidFieldCopy.attachmentRequiredError;
     if ((usesMarketplacePickupGuide || isCourierPaid || activeFlow === "pickup_standard") && !activePickup.termsAccepted) {
       nextErrors.termsAccepted = "Подтвердите согласие с условиями доставки, оплаты и договором оферты";
@@ -2232,7 +2231,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
         type PaidSourceOption =
           | { kind: "marketplace"; id: MarketplaceId; label: string; asset: string }
           | { kind: "special"; id: SpecialPickupId; label: string; icon: string }
-          | { kind: "link"; id: "pickup_standard" | "cancel_order"; label: string; icon: string };
+          | { kind: "link"; id: "pickup_standard"; label: string; icon: string };
 
         const priorityMarketplaceIds = ["cdek", "5post", "dpd"] as const satisfies readonly MarketplaceId[];
         const regularMarketplaceIds = ["wildberries", "ozon", "yandex_market", "avito", "lamoda", "goldapple", "letual", "detmir"] as const satisfies readonly MarketplaceId[];
@@ -2277,7 +2276,6 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
               icon: option.icon,
             })),
           { kind: "link" as const, id: "pickup_standard", label: "Заказ по ссылке", icon: "🔗" },
-          { kind: "link" as const, id: "cancel_order", label: "Отмена заказа", icon: "📋" },
         ];
         const renderSourceOption = (option: PaidSourceOption) => {
           const active = option.kind !== "link" && activePickup.marketplace === option.id;
@@ -2371,7 +2369,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                   {marketplaceSourceOptions.map(renderSourceOption)}
                 </div>
 
-                <div className="mx-auto mt-4 grid max-w-[860px] gap-4 sm:grid-cols-3">
+                <div className="mx-auto mt-4 grid w-full max-w-[560px] gap-4 sm:grid-cols-2">
                   {actionSourceOptions.map(renderSourceOption)}
                 </div>
 
@@ -2958,9 +2956,6 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                         label={
                           <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
                             <span>Номер заказа</span>
-                            <span className={fieldStateLabelClass}>
-                              Не обязательно
-                            </span>
                           </span>
                         }
                         htmlFor={`${activeFlow}-trackingNumber`}

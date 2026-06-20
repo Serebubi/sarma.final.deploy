@@ -364,6 +364,9 @@ export const createPaidPickupOrderSchema = z
       if (!payload.transportCompany) {
         ctx.addIssue({ code: "custom", path: ["transportCompany"], message: "Выберите транспортную компанию" });
       }
+      if (!payload.trackingNumber) {
+        ctx.addIssue({ code: "custom", path: ["trackingNumber"], message: "Укажите номер заказа" });
+      }
       return;
     }
 
