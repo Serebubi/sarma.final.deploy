@@ -79,15 +79,15 @@ declare global {
 }
 
 const pickupPointCoordinates: Partial<Record<(typeof pickupPointOptions)[number]["id"], [number, number]>> = {
-  chelyuskintsev_donetsk: [48.0081003, 37.8078437],
-  kubysheva_warehouse: [47.9949161, 37.7690267],
-  mendeleeva_volnovakha: [47.5155566, 37.5341609],
-  ostrovskogo_makeevka: [48.0436158, 37.965839],
+  chelyuskintsev_donetsk: [48.008567, 37.807381],
+  kubysheva_warehouse: [47.994223, 37.772722],
+  mendeleeva_volnovakha: [47.617928, 37.495416],
+  ostrovskogo_makeevka: [48.043785, 37.965301],
   pobedy_gorlovka: [48.299763, 38.024886],
   internatsionalnaya_gorlovka_warehouse: [48.3062, 38.0429],
   gorkogo_melitopol: [46.845675, 35.362846],
   arsenalnaya_rostov_warehouse: [47.280283, 39.683105],
-  grushevskogo_mariupol: [47.120196, 37.5122688],
+  grushevskogo_mariupol: [47.120125, 37.512334],
 };
 
 const pickupPoints: PickupPoint[] = pickupPointOptions.map((point) => ({
