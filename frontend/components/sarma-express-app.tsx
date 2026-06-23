@@ -94,6 +94,8 @@ type PickupState = {
   attachment: File | null;
   bulkyAttachments: File[];
   productAttachment: File | null;
+  inspectionRequired: boolean;
+  inspectionCount: string;
   termsAccepted: boolean;
   result: OrderRecord | null;
   errors: Record<string, string>;
@@ -296,6 +298,8 @@ function createPickupState(): PickupState {
     attachment: null,
     bulkyAttachments: [],
     productAttachment: null,
+    inspectionRequired: false,
+    inspectionCount: "",
     termsAccepted: false,
     result: null,
     errors: {},
@@ -1850,8 +1854,10 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
             shipmentNumber: isCdekPaid ? activePickup.shipmentNumber : undefined,
             senderName: isCourierPaid || isBulkyPaid ? activePickup.senderName : undefined,
             transportCompany: isBulkyPaid ? activePickup.transportCompany || undefined : undefined,
-            pickupCode: usesTrackingPickupFields || usesMarketplacePickupGuide || isDetmirPaid || isCourierPaid || isBulkyPaid ? activePickup.pickupCode : undefined,
-          });
+          pickupCode: usesTrackingPickupFields || usesMarketplacePickupGuide || isDetmirPaid || isCourierPaid || isBulkyPaid ? activePickup.pickupCode : undefined,
+          inspectionRequired: activePickup.inspectionRequired,
+          inspectionCount: activePickup.inspectionCount || undefined,
+        });
 
     const nextErrors: Record<string, string> = {};
     if (!parsed.success) {
@@ -1908,6 +1914,8 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           sourceUrl: activeFlow === "pickup_standard" ? activePickup.sourceUrl : undefined,
           attachment: activeFlow === "pickup_paid" && !isBulkyPaid ? activePickup.attachment ?? undefined : undefined,
           bulkyAttachments: activeFlow === "pickup_paid" && isBulkyPaid ? activePickup.bulkyAttachments : undefined,
+          inspectionRequired: activePickup.inspectionRequired,
+          inspectionCount: activePickup.inspectionCount || undefined,
         });
         setActivePickup((current) => ({ ...current, step: 3, result: response.order, errors: {} }));
       } catch (error) {
@@ -2298,6 +2306,8 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                   shipmentNumber: "",
                   pickupCode: "",
                   transportCompany: "",
+                  inspectionRequired: false,
+                  inspectionCount: "",
                   termsAccepted: false,
                   errors: {},
                 });
@@ -2429,6 +2439,8 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                         updatePickup({
                           marketplace: marketplace.id,
                           pickupPoint: "",
+                          inspectionRequired: false,
+                          inspectionCount: "",
                           termsAccepted: false,
                           errors: {},
                         })
@@ -3145,7 +3157,12 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                 </ul>
                 {activeMarketplaceGuide?.inspectionOption || isCourierPaid ? (
                   <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#d7e4f7] bg-[#f5f9ff] px-4 py-3">
-                    <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#b7cff4] text-[#3b74cf]" />
+                    <input
+                      type="checkbox"
+                      checked={activePickup.inspectionRequired}
+                      onChange={(event) => updatePickup({ inspectionRequired: event.target.checked })}
+                      className="mt-1 h-4 w-4 rounded border-[#b7cff4] text-[#3b74cf]"
+                    />
                     <span className="text-sm font-semibold leading-6 text-[#13345f]">
                       {isCourierPaid ? "Хрупкий / дорогой груз. Нужно осмотреть при получении." : activeMarketplaceGuide?.inspectionOption}
                     </span>
@@ -3153,7 +3170,12 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
                 ) : null}
                 {isCourierPaid ? (
                   <Field label="Укажите количество мест для осмотра" htmlFor={`${activeFlow}-inspectionCount`}>
-                    <Input id={`${activeFlow}-inspectionCount`} placeholder="Укажите количество мест" />
+                    <Input
+                      id={`${activeFlow}-inspectionCount`}
+                      placeholder="Укажите количество мест"
+                      value={activePickup.inspectionCount}
+                      onChange={(event) => updatePickup({ inspectionCount: event.target.value.replace(/\D/g, "") })}
+                    />
                   </Field>
                 ) : null}
                 <div className="mt-4 flex flex-wrap gap-3 text-xs font-semibold text-[#3f74cb]">

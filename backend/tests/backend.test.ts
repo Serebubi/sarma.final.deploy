@@ -1,4 +1,4 @@
-import request from "supertest";
+﻿import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createApp } from "../src/app.js";
@@ -24,6 +24,15 @@ function readFormBody(body: RequestInit["body"] | null | undefined) {
   }
 
   throw new Error("Unexpected request body");
+}
+
+function readBitrixParams(input: RequestInfo | URL, body: RequestInit["body"] | null | undefined) {
+  const query = new URL(String(input)).searchParams;
+  if ([...query.keys()].length > 0) {
+    return query;
+  }
+
+  return readFormBody(body);
 }
 
 const bitrixDealCategories = [
@@ -61,7 +70,7 @@ function createCapturingBitrixFetch(dealPayloads: URLSearchParams[]) {
     }
 
     if (url.includes("crm.deal.add")) {
-      dealPayloads.push(readFormBody(init?.body));
+      dealPayloads.push(readBitrixParams(input, init?.body));
       return createBitrixResponse(600 + dealPayloads.length);
     }
 
@@ -128,8 +137,7 @@ describe("backend api", () => {
       }
 
       if (url.includes("crm.status.list")) {
-        const body = readFormBody(init?.body);
-        expect(body.get("filter[ENTITY_ID]")).toBe("DEAL_STAGE_7");
+        expect(new URL(url).searchParams.get("filter[ENTITY_ID]")).toBe("DEAL_STAGE_7");
         return createBitrixResponse([
           {
             STATUS_ID: "C7:S06_KURER_PEREME",
@@ -221,7 +229,7 @@ describe("backend api", () => {
       }
 
       if (url.includes("crm.deal.add")) {
-        dealPayloads.push(readFormBody(init?.body));
+        dealPayloads.push(readBitrixParams(input, init?.body));
         return createBitrixResponse(654);
       }
 
@@ -273,7 +281,7 @@ describe("backend api", () => {
       }
 
       if (url.includes("crm.deal.add")) {
-        dealPayloads.push(readFormBody(init?.body));
+        dealPayloads.push(readBitrixParams(input, init?.body));
         return createBitrixResponse(654);
       }
 
@@ -306,6 +314,42 @@ describe("backend api", () => {
     expect(dealPayload?.get("fields[UF_CRM_1774908871627]")).toBeNull();
     expect(createResponse.body.order.size).toBe("42");
     expect(dealPayload?.get("fields[COMMENTS]")).toContain("42");
+  });
+
+  it("maps site form fields to Sarma Bitrix deal fields instead of comments", async () => {
+    const dealPayloads: URLSearchParams[] = [];
+    vi.stubGlobal("fetch", createCapturingBitrixFetch(dealPayloads));
+    const app = createApp();
+
+    const createResponse = await request(app)
+      .post("/orders/create")
+      .field("orderType", "pickup_paid")
+      .field("marketplace", "courier")
+      .field("pickupPoint", "ostrovskogo_makeevka")
+      .field("firstName", "Ivan")
+      .field("lastName", "Ivanov")
+      .field("phone", "+79997776655")
+      .field("senderName", "Ozon")
+      .field("trackingNumber", "COURIER-42")
+      .field("pickupCode", "4455")
+      .field("inspectionRequired", "true")
+      .field("inspectionCount", "3")
+      .attach("attachment", Buffer.from("test file"), "courier-order.png");
+
+    expect(createResponse.status).toBe(201);
+    const dealPayload = dealPayloads[0];
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_MARKETPLACE]")).toBe("75");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_PVZ]")).toBe("95");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_TRACK]")).toBeNull();
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_ORDER_NO]")).toBe("COURIER-42");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_PICKUP_CODE]")).toBe("4455");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_INSPECTION_REQUIRED]")).toBe("301");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_INSPECTION_QTY]")).toBe("3");
+    expect(dealPayload?.get("fields[UF_CRM_SARMA_SCREENSHOT_URL]")).toContain("/uploads/");
+    expect(dealPayload?.get("fields[COMMENTS]") ?? "").not.toContain("COURIER-42");
+    expect(dealPayload?.get("fields[COMMENTS]") ?? "").not.toContain("4455");
+    expect(createResponse.body.order.inspectionRequired).toBe(true);
+    expect(createResponse.body.order.inspectionCount).toBe(3);
   });
 
   it("creates pickup standard order without item count and total amount", async () => {

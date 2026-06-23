@@ -111,6 +111,8 @@ export class OrderService {
       attachment,
       productAttachment,
       bulkyAttachments,
+      inspectionRequired: "inspectionRequired" in payload ? payload.inspectionRequired : false,
+      inspectionCount: "inspectionCount" in payload ? payload.inspectionCount ?? null : null,
       crmSyncState: "pending",
       crmContactId: null,
       crmDealId: null,
