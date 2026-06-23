@@ -40,6 +40,8 @@ export async function createPickupOrder(payload: {
   pickupCode?: string;
   sourceUrl?: string;
   additionalInfo?: string;
+  inspectionRequired?: boolean;
+  inspectionCount?: string;
   attachment?: File;
   bulkyAttachments?: File[];
   productAttachment?: File;
@@ -84,6 +86,12 @@ export async function createPickupOrder(payload: {
   }
   if (payload.additionalInfo) {
     formData.set("additionalInfo", payload.additionalInfo);
+  }
+  if (payload.inspectionRequired !== undefined) {
+    formData.set("inspectionRequired", String(payload.inspectionRequired));
+  }
+  if (payload.inspectionCount) {
+    formData.set("inspectionCount", payload.inspectionCount);
   }
   if (payload.attachment) {
     formData.set("attachment", payload.attachment);

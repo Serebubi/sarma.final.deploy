@@ -66,7 +66,15 @@ type BitrixDealFieldKey =
   | "additionalInfo"
   | "productTitle"
   | "productAttachmentUrl"
-  | "attachmentUrl";
+  | "attachmentUrl"
+  | "siteMarketplace"
+  | "sitePickupPoint"
+  | "siteTrackingNumber"
+  | "siteMarketplaceOrderNumber"
+  | "sitePickupCode"
+  | "siteAttachmentUrl"
+  | "inspectionRequired"
+  | "inspectionCount";
 
 type BitrixDealFieldMap = Partial<Record<BitrixDealFieldKey, string>>;
 
@@ -102,6 +110,14 @@ const bitrixDealFieldEnvMap = {
   productTitle: "BITRIX_DEAL_FIELD_PRODUCT_TITLE",
   productAttachmentUrl: "BITRIX_DEAL_FIELD_PRODUCT_ATTACHMENT_URL",
   attachmentUrl: "BITRIX_DEAL_FIELD_ATTACHMENT_URL",
+  siteMarketplace: "BITRIX_DEAL_FIELD_SITE_MARKETPLACE",
+  sitePickupPoint: "BITRIX_DEAL_FIELD_SITE_PICKUP_POINT",
+  siteTrackingNumber: "BITRIX_DEAL_FIELD_SITE_TRACKING_NUMBER",
+  siteMarketplaceOrderNumber: "BITRIX_DEAL_FIELD_SITE_MARKETPLACE_ORDER_NUMBER",
+  sitePickupCode: "BITRIX_DEAL_FIELD_SITE_PICKUP_CODE",
+  siteAttachmentUrl: "BITRIX_DEAL_FIELD_SITE_ATTACHMENT_URL",
+  inspectionRequired: "BITRIX_DEAL_FIELD_INSPECTION_REQUIRED",
+  inspectionCount: "BITRIX_DEAL_FIELD_INSPECTION_COUNT",
 } satisfies Record<BitrixDealFieldKey, string>;
 
 const defaultBitrixDealFieldMap: BitrixDealFieldMap = {
@@ -112,6 +128,17 @@ const defaultBitrixDealFieldMap: BitrixDealFieldMap = {
   pickupAddress: "UF_CRM_1774909256492",
   itemCount: "UF_CRM_1774908835361",
   totalAmount: "UF_CRM_1774908871627",
+  sourceUrl: "UF_CRM_SARMA_PRODUCT_URL",
+  attachmentUrl: "UF_CRM_SARMA_SCREENSHOT_URL",
+  productAttachmentUrl: "UF_CRM_SARMA_SITE_FILES",
+  siteMarketplace: "UF_CRM_SARMA_MARKETPLACE",
+  sitePickupPoint: "UF_CRM_SARMA_PVZ",
+  siteTrackingNumber: "UF_CRM_SARMA_TRACK",
+  siteMarketplaceOrderNumber: "UF_CRM_SARMA_ORDER_NO",
+  sitePickupCode: "UF_CRM_SARMA_PICKUP_CODE",
+  siteAttachmentUrl: "UF_CRM_SARMA_SCREENSHOT_URL",
+  inspectionRequired: "UF_CRM_SARMA_INSPECTION_REQUIRED",
+  inspectionCount: "UF_CRM_SARMA_INSPECTION_QTY",
 };
 
 export interface BitrixSyncSnapshot {
@@ -267,6 +294,18 @@ function buildPhoneVariants(phone: string) {
   return [...variants];
 }
 
+function shouldCallBitrixWithQuery(method: string) {
+  return (
+    method === "crm.duplicate.findbycomm" ||
+    method === "crm.category.list" ||
+    method === "crm.contact.add" ||
+    method === "crm.deal.add" ||
+    method === "crm.dealcategory.list" ||
+    method === "crm.deal.get" ||
+    method === "crm.status.list"
+  );
+}
+
 function buildContactFields(order: OrderRecord) {
   const firstName = order.customer.firstName.trim() || "Клиент";
   const lastName = order.customer.lastName?.trim() || "Не указан";
@@ -371,6 +410,101 @@ function humanizeTransportCompany(company: OrderRecord["transportCompany"]) {
   }
 }
 
+function resolveSiteMarketplaceValue(order: OrderRecord) {
+  if (order.orderType === "home_delivery") {
+    return 77;
+  }
+
+  if (order.orderType === "pickup_standard") {
+    return 81;
+  }
+
+  if (order.marketplace === "bulky") {
+    switch (order.transportCompany) {
+      case "pek":
+        return 71;
+      case "delovye_linii":
+        return 73;
+      default:
+        return 79;
+    }
+  }
+
+  switch (order.marketplace) {
+    case "ozon":
+      return 45;
+    case "wildberries":
+      return 47;
+    case "avito":
+      return 53;
+    case "yandex_market":
+      return 55;
+    case "cdek":
+      return 57;
+    case "5post":
+      return 59;
+    case "dpd":
+      return 61;
+    case "lamoda":
+      return 63;
+    case "detmir":
+      return 65;
+    case "letual":
+      return 67;
+    case "goldapple":
+      return 69;
+    case "courier":
+      return 75;
+    default:
+      return 89;
+  }
+}
+
+function resolveSitePickupPointValue(pickupPoint: OrderRecord["pickupPoint"]) {
+  switch (pickupPoint) {
+    case "chelyuskintsev_donetsk":
+      return 91;
+    case "mendeleeva_volnovakha":
+      return 93;
+    case "ostrovskogo_makeevka":
+      return 95;
+    case "pobedy_gorlovka":
+      return 97;
+    case "gorkogo_melitopol":
+      return 99;
+    case "grushevskogo_mariupol":
+      return 101;
+    case "arsenalnaya_rostov_warehouse":
+      return 103;
+    case "kubysheva_warehouse":
+      return 105;
+    case "internatsionalnaya_gorlovka_warehouse":
+      return 107;
+    default:
+      return null;
+  }
+}
+
+function buildSiteTrackingNumber(order: OrderRecord) {
+  return order.marketplace === "cdek" || order.marketplace === "5post" || order.marketplace === "dpd"
+    ? order.trackingNumber
+    : null;
+}
+
+function buildSiteMarketplaceOrderNumber(order: OrderRecord) {
+  if (order.shipmentNumber) {
+    return order.shipmentNumber;
+  }
+
+  return order.marketplace === "detmir" ||
+    order.marketplace === "goldapple" ||
+    order.marketplace === "letual" ||
+    order.marketplace === "bulky" ||
+    order.marketplace === "courier"
+    ? order.trackingNumber
+    : null;
+}
+
 function getConfiguredDealFieldMap(): BitrixDealFieldMap {
   const fieldMap: BitrixDealFieldMap = { ...defaultBitrixDealFieldMap };
 
@@ -389,9 +523,11 @@ function buildDealFieldEntries(order: OrderRecord, attachmentUrl: string | null,
     { key: "orderNumber", label: "Номер заказа", value: order.orderNumber },
     { key: "orderType", label: "Тип заказа", value: buildOrderTypeLabel(order.orderType) },
     { key: "marketplace", label: "Маркетплейс", value: humanizeMarketplace(order.marketplace) },
+    { key: "siteMarketplace", label: "Маркетплейс / источник (с сайта)", value: resolveSiteMarketplaceValue(order) },
     { key: "status", label: "Статус", value: order.status },
     { key: "pickupAddress", label: "Адрес ПВЗ", value: order.pickupAddress },
     { key: "pickupPoint", label: "Пункт выдачи", value: order.pickupPoint ? humanizePickupPoint(order.pickupPoint) : null },
+    { key: "sitePickupPoint", label: "ПВЗ / склад (с сайта)", value: resolveSitePickupPointValue(order.pickupPoint) },
     { key: "customerName", label: "ФИО", value: buildCustomerFullName(order) },
     { key: "customerPhone", label: "Телефон", value: order.customer.phone },
     { key: "totalAmount", label: "Сумма", value: order.totalAmount },
@@ -414,12 +550,17 @@ function buildDealFieldEntries(order: OrderRecord, attachmentUrl: string | null,
     { key: "deliveryDate", label: "Желаемая дата доставки", value: order.deliveryDate },
     { key: "deliveryTimeSlot", label: "Интервал доставки", value: order.deliveryTimeSlot },
     { key: "trackingNumber", label: "Трек-номер", value: order.trackingNumber },
+    { key: "siteTrackingNumber", label: "Трек-номер (с сайта)", value: buildSiteTrackingNumber(order) },
     { key: "shipmentNumber", label: "Номер отправления ИМ", value: order.shipmentNumber },
+    { key: "siteMarketplaceOrderNumber", label: "Номер интернет-магазина (с сайта)", value: buildSiteMarketplaceOrderNumber(order) },
     { key: "senderName", label: "Отправитель / интернет-магазин", value: order.senderName },
     { key: "transportCompany", label: "Транспортная компания", value: humanizeTransportCompany(order.transportCompany) },
     { key: "pickupCode", label: "Код получения", value: order.pickupCode },
+    { key: "sitePickupCode", label: "Код получения / штрихкод (с сайта)", value: order.pickupCode },
     { key: "size", label: "\u0420\u0430\u0437\u043c\u0435\u0440", value: order.size },
     { key: "additionalInfo", label: "Дополнительная информация", value: order.additionalInfo },
+    { key: "inspectionRequired", label: "Осмотр позиций как услуга", value: order.inspectionRequired ? 301 : 299 },
+    { key: "inspectionCount", label: "Количество товаров для осмотра", value: order.inspectionCount },
     { key: "productTitle", label: "Товар", value: order.productPreview?.title ?? null },
     {
       key: "productAttachmentUrl",
@@ -429,6 +570,11 @@ function buildDealFieldEntries(order: OrderRecord, attachmentUrl: string | null,
     {
       key: "attachmentUrl",
       label: "Штрих-код / QR",
+      value: attachmentUrl ?? order.attachment?.filePath ?? null,
+    },
+    {
+      key: "siteAttachmentUrl",
+      label: "Ссылка на скриншот / файл (с сайта)",
       value: attachmentUrl ?? order.attachment?.filePath ?? null,
     },
   ];
@@ -449,9 +595,22 @@ function buildMappedDealFields(entries: BitrixDealFieldEntry[], fieldMap: Bitrix
   return fields;
 }
 
+const commentFieldAliases: Partial<Record<BitrixDealFieldKey, BitrixDealFieldKey[]>> = {
+  marketplace: ["siteMarketplace"],
+  pickupPoint: ["sitePickupPoint"],
+  trackingNumber: ["siteTrackingNumber", "siteMarketplaceOrderNumber"],
+  shipmentNumber: ["siteMarketplaceOrderNumber"],
+  pickupCode: ["sitePickupCode"],
+  attachmentUrl: ["siteAttachmentUrl"],
+};
+
+function hasMappedAlias(entry: BitrixDealFieldEntry, fieldMap: BitrixDealFieldMap) {
+  return commentFieldAliases[entry.key]?.some((alias) => Boolean(fieldMap[alias])) ?? false;
+}
+
 function buildDealComments(entries: BitrixDealFieldEntry[], fieldMap: BitrixDealFieldMap) {
   return entries
-    .filter((entry) => entry.value != null && !fieldMap[entry.key])
+    .filter((entry) => entry.value != null && !fieldMap[entry.key] && !hasMappedAlias(entry, fieldMap))
     .map((entry) => `${entry.label}: ${entry.value}`)
     .join("\n");
 }
@@ -506,18 +665,53 @@ export class BitrixService {
       throw new BitrixSyncError("Не настроен webhook Bitrix24.");
     }
 
-    const query =
-      method === "crm.duplicate.findbycomm"
-        ? buildDuplicateFindByCommQuery(payload).toString()
-        : buildBody(payload).toString();
-    const response = await this.fetchImpl(`${webhookBaseUrl}${method}.json${query ? `?${query}` : ""}`, {
-      method: "GET",
+    if (shouldCallBitrixWithQuery(method)) {
+      const query =
+        method === "crm.duplicate.findbycomm"
+          ? buildDuplicateFindByCommQuery(payload).toString()
+          : buildBody(payload).toString();
+      const response = await this.fetchImpl(`${webhookBaseUrl}${method}.json${query ? `?${query}` : ""}`, {
+        method: "GET",
+      });
+
+      const data = (await response.json().catch(() => null)) as BitrixApiResponse<T> | null;
+
+      if (!response.ok) {
+        throw new BitrixSyncError(
+          data?.error_description ?? data?.error ?? `Bitrix24 вернул HTTP ${response.status} для метода ${method}.`,
+        );
+      }
+
+      if (!data) {
+        throw new BitrixSyncError(`Bitrix24 вернул пустой ответ для метода ${method}.`);
+      }
+
+      if (data.error) {
+        throw new BitrixSyncError(data.error_description ?? data.error);
+      }
+
+      if (data.result === undefined) {
+        throw new BitrixSyncError(`Bitrix24 не вернул result для метода ${method}.`);
+      }
+
+      return data.result;
+    }
+
+    const body = buildBody(payload);
+    const response = await this.fetchImpl(`${webhookBaseUrl}${method}.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: body.toString(),
     });
 
     const data = (await response.json().catch(() => null)) as BitrixApiResponse<T> | null;
 
     if (!response.ok) {
-      throw new BitrixSyncError(`Bitrix24 вернул HTTP ${response.status} для метода ${method}.`);
+      throw new BitrixSyncError(
+        data?.error_description ?? data?.error ?? `Bitrix24 вернул HTTP ${response.status} для метода ${method}.`,
+      );
     }
 
     if (!data) {
@@ -764,6 +958,8 @@ export function mapOrderToBitrixPayload(order: OrderRecord) {
       pickupCode: order.pickupCode,
       size: order.size,
       additionalInfo: order.additionalInfo,
+      inspectionRequired: order.inspectionRequired,
+      inspectionCount: order.inspectionCount,
     },
     pricing: {
       itemCount: order.itemCount,

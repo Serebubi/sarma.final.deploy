@@ -36,6 +36,8 @@ const sampleOrder: OrderRecord = {
   attachment: null,
   productAttachment: null,
   bulkyAttachments: [],
+  inspectionRequired: false,
+  inspectionCount: null,
   crmSyncState: "pending",
   crmContactId: null,
   crmDealId: null,

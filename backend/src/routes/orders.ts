@@ -40,6 +40,16 @@ function getOptionalOrderTotals(body: Record<string, string | undefined>) {
   };
 }
 
+function getOptionalInspectionFields(body: Record<string, string | undefined>) {
+  const inspectionRequired = body.inspectionRequired === "true";
+  const inspectionCount = parseOptionalNumberField(body.inspectionCount, "Количество товаров для осмотра");
+
+  return {
+    inspectionRequired,
+    ...(inspectionCount === undefined ? {} : { inspectionCount }),
+  };
+}
+
 function getUploadedFile(files: Request["files"], fieldName: string) {
   if (!files || Array.isArray(files)) {
     return null;
@@ -103,6 +113,7 @@ export function createOrderRouter(orderService: OrderService) {
                   size: body.size,
                   sourceUrl: body.sourceUrl,
                   additionalInfo: body.additionalInfo,
+                  ...getOptionalInspectionFields(body),
                 }
               : body.marketplace === "cdek" || body.marketplace === "5post" || body.marketplace === "dpd"
                 ? {
@@ -115,6 +126,7 @@ export function createOrderRouter(orderService: OrderService) {
                     trackingNumber: body.trackingNumber,
                     shipmentNumber: body.shipmentNumber,
                     pickupCode: body.pickupCode,
+                    ...getOptionalInspectionFields(body),
                   }
                 : body.marketplace === "bulky"
                     ? {
@@ -128,6 +140,7 @@ export function createOrderRouter(orderService: OrderService) {
                         transportCompany: body.transportCompany,
                         trackingNumber: body.trackingNumber,
                         pickupCode: body.pickupCode,
+                        ...getOptionalInspectionFields(body),
                       }
                     : body.marketplace === "courier"
                       ? {
@@ -141,6 +154,7 @@ export function createOrderRouter(orderService: OrderService) {
                           trackingNumber: body.trackingNumber,
                           pickupCode: body.pickupCode,
                           ...getOptionalOrderTotals(body),
+                          ...getOptionalInspectionFields(body),
                         }
                       : {
                           orderType: body.orderType,
@@ -152,6 +166,7 @@ export function createOrderRouter(orderService: OrderService) {
                           ...getOptionalOrderTotals(body),
                           trackingNumber: body.trackingNumber,
                           pickupCode: body.pickupCode,
+                          ...getOptionalInspectionFields(body),
                         };
         const payload = createOrderSchema.parse(rawPayload);
 
