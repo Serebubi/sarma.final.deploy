@@ -39,6 +39,7 @@ import {
 } from "shared";
 
 import { ApiError, cancelOrder, createHomeDeliveryOrder, createPickupOrder, fetchOrder, lookupOrder as lookupTrackedOrder } from "@/lib/api";
+import { readRememberedCustomer, writeRememberedCustomer, type RememberedCustomer } from "@/lib/remembered-customer";
 import { SarmaExpressHeader, SarmaExpressLogo } from "@/components/sarma-express-header";
 
 import { FlowShell } from "./flow-shell";
@@ -277,14 +278,14 @@ const actionCards: Array<{
   },
 ];
 
-function createPickupState(): PickupState {
+function createPickupState(rememberedCustomer?: RememberedCustomer | null): PickupState {
   return {
     step: 1,
     marketplace: "",
-    pickupPoint: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
+    pickupPoint: rememberedCustomer?.pickupPoint ?? "",
+    firstName: rememberedCustomer?.firstName ?? "",
+    lastName: rememberedCustomer?.lastName ?? "",
+    phone: rememberedCustomer?.phone ?? "",
     size: "",
     itemCount: "",
     totalAmount: "",
@@ -306,15 +307,32 @@ function createPickupState(): PickupState {
   };
 }
 
-function createDeliveryState(): DeliveryState {
+function createDeliveryState(rememberedCustomer?: RememberedCustomer | null): DeliveryState {
   return {
     step: 1,
     orderNumbers: [""],
-    deliveryAddress: "",
+    deliveryAddress: rememberedCustomer?.deliveryAddress ?? "",
     deliveryDate: "",
     deliveryTimeSlot: "",
     result: null,
     errors: {},
+  };
+}
+
+function applyRememberedCustomerToPickupState(current: PickupState, rememberedCustomer: RememberedCustomer): PickupState {
+  return {
+    ...current,
+    pickupPoint: current.pickupPoint || rememberedCustomer.pickupPoint || "",
+    firstName: current.firstName || rememberedCustomer.firstName || "",
+    lastName: current.lastName || rememberedCustomer.lastName || "",
+    phone: current.phone || rememberedCustomer.phone || "",
+  };
+}
+
+function applyRememberedCustomerToDeliveryState(current: DeliveryState, rememberedCustomer: RememberedCustomer): DeliveryState {
+  return {
+    ...current,
+    deliveryAddress: current.deliveryAddress || rememberedCustomer.deliveryAddress || "",
   };
 }
 
@@ -354,6 +372,32 @@ function Field({
       {hint ? <span className="block text-xs leading-6 text-[color:var(--muted)]">{hint}</span> : null}
       {error ? <span className="block text-xs font-semibold text-[color:var(--danger)]">{error}</span> : null}
     </div>
+  );
+}
+
+function RememberCustomerCheckbox({
+  id,
+  checked,
+  onChange,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label
+      htmlFor={id}
+      className="flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#d7e4f7] bg-white/88 px-4 py-3 text-sm font-semibold leading-6 text-[#13345f] shadow-[0_10px_24px_rgba(39,77,146,0.06)]"
+    >
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="mt-1 h-4 w-4 rounded border-[#b7cff4] text-[#3b74cf]"
+      />
+      <span>Запомнить мои данные на этом устройстве</span>
+    </label>
   );
 }
 
@@ -1646,8 +1690,10 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [cancelSupportNoticeVisible, setCancelSupportNoticeVisible] = useState(false);
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
+  const [rememberCustomer, setRememberCustomer] = useState(true);
   const [pending, startUiTransition] = useTransition();
   const lastScrollYRef = useRef(0);
+  const rememberedCustomerRef = useRef<RememberedCustomer | null>(null);
 
   const deferredLookupNumber = useDeferredValue(lookupNumber);
   const deferredCancelNumber = useDeferredValue(cancelNumber);
@@ -1667,6 +1713,19 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
     activePickup.marketplace && activePickup.marketplace in marketplaceExampleUrls
       ? marketplaceExampleUrls[activePickup.marketplace as MarketplaceId]
       : "https://example.com/product/...";
+
+  useEffect(() => {
+    const rememberedCustomer = readRememberedCustomer();
+    rememberedCustomerRef.current = rememberedCustomer;
+
+    if (!rememberedCustomer) {
+      return;
+    }
+
+    setPickupStandard((current) => applyRememberedCustomerToPickupState(current, rememberedCustomer));
+    setPickupPaid((current) => applyRememberedCustomerToPickupState(current, rememberedCustomer));
+    setDelivery((current) => applyRememberedCustomerToDeliveryState(current, rememberedCustomer));
+  }, []);
 
   const updatePickup = (patch: Partial<PickupState>) => setActivePickup((current) => ({ ...current, ...patch }));
   const setBulkyAttachments = (selectedFiles: File[]) =>
@@ -1731,7 +1790,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
 
   const handleSarmaHeaderNavigate = (href: string, key: string) => {
     if (key === "internet-delivery") {
-      setPickupPaid(createPickupState());
+      setPickupPaid(createPickupState(rememberedCustomerRef.current));
       openFlow("pickup_paid");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
@@ -1795,6 +1854,41 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
     ozon: (
       <MarketplaceInfoBlock guide={marketplacePickupGuideById.ozon!} />
     ),
+  };
+
+  const rememberPickupCustomer = (pickup: PickupState) => {
+    if (!rememberCustomer) {
+      return;
+    }
+
+    const patch: RememberedCustomer = {
+      firstName: pickup.firstName.trim() || undefined,
+      lastName: pickup.lastName.trim() || undefined,
+      phone: pickup.phone.trim() || undefined,
+      pickupPoint: pickup.pickupPoint || undefined,
+    };
+
+    rememberedCustomerRef.current = {
+      ...(rememberedCustomerRef.current ?? {}),
+      ...patch,
+    };
+    writeRememberedCustomer(patch);
+  };
+
+  const rememberDeliveryCustomer = (deliveryState: DeliveryState) => {
+    if (!rememberCustomer) {
+      return;
+    }
+
+    const patch: RememberedCustomer = {
+      deliveryAddress: deliveryState.deliveryAddress.trim() || undefined,
+    };
+
+    rememberedCustomerRef.current = {
+      ...(rememberedCustomerRef.current ?? {}),
+      ...patch,
+    };
+    writeRememberedCustomer(patch);
   };
 
   const continuePickupSelection = () => {
@@ -1917,6 +2011,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           inspectionRequired: activePickup.inspectionRequired,
           inspectionCount: activePickup.inspectionCount || undefined,
         });
+        rememberPickupCustomer(activePickup);
         setActivePickup((current) => ({ ...current, step: 3, result: response.order, errors: {} }));
       } catch (error) {
         const fieldErrors = apiValidationErrorsToFieldErrors(error);
@@ -1955,6 +2050,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           deliveryDate: delivery.deliveryDate,
           deliveryTimeSlot: delivery.deliveryTimeSlot as HomeDeliveryTimeSlot,
         });
+        rememberDeliveryCustomer(delivery);
         setDelivery((current) => ({ ...current, step: 2, result: response.order, errors: {} }));
       } catch (error) {
         setDelivery((current) => ({
@@ -3292,6 +3388,12 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
               </div>
             ) : null}
 
+            <RememberCustomerCheckbox
+              id={`${activeFlow}-remember-customer`}
+              checked={rememberCustomer}
+              onChange={setRememberCustomer}
+            />
+
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
               <SecondaryButton
                 type="button"
@@ -3323,7 +3425,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           description="Мы уже приняли данные и сформировали заказ. Дальше можно создать новый заказ или сразу перейти к поиску статуса."
           primaryLabel="Создать ещё заказ"
           onPrimary={() => {
-            setActivePickup(createPickupState());
+            setActivePickup(createPickupState(rememberedCustomerRef.current));
           }}
           secondaryLabel="Проверить статус"
           onSecondary={() => openFlow("order_lookup")}
@@ -3343,7 +3445,7 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           description="Мы сохранили номера заказов, адрес, дату и выбранный интервал доставки. Дальше можно оформить ещё одну доставку или вернуться на главный экран."
           primaryLabel="Создать ещё доставку"
           onPrimary={() => {
-            setDelivery(createDeliveryState());
+            setDelivery(createDeliveryState(rememberedCustomerRef.current));
           }}
           secondaryLabel="На главную"
           onSecondary={() => openFlow("overview")}
@@ -3466,7 +3568,12 @@ export function SarmaExpressApp({ initialFlow = "overview" }: { initialFlow?: Fl
           ) : null}
 
           {hasDeliveryOrders ? (
-            <div className="flex justify-end pt-4">
+            <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <RememberCustomerCheckbox
+                id="delivery-remember-customer"
+                checked={rememberCustomer}
+                onChange={setRememberCustomer}
+              />
               <PrimaryButton type="submit" disabled={pending} className="min-h-14 min-w-[180px] px-6">
                 {pending ? "Создаём..." : "Продолжить"}
               </PrimaryButton>
